@@ -16,3 +16,5 @@ C:\Users\joao_\Desktop\CarteiraPro\Infrastructure\obj\Debug\net10.0\Infrastructu
 C:\Users\joao_\Desktop\CarteiraPro\Infrastructure\obj\Debug\net10.0\refint\Infrastructure.dll
 C:\Users\joao_\Desktop\CarteiraPro\Infrastructure\obj\Debug\net10.0\Infrastructure.pdb
 C:\Users\joao_\Desktop\CarteiraPro\Infrastructure\obj\Debug\net10.0\ref\Infrastructure.dll
+C:\Users\joao_\Desktop\CarteiraPro\Infrastructure\bin\Debug\net10.0\Infrastructure.runtimeconfig.json
+C:\Users\joao_\Desktop\CarteiraPro\Infrastructure\obj\Debug\net10.0\Infrastructure.genruntimeconfig.cache
