@@ -14,7 +14,7 @@ public class AtivoRepository : IAtivoRepository
         _context = context;
     }
 
-    public async Task<Ativo> GetByIdAsync(Guid id)
+    public async Task<Ativo?> GetByIdAsync(Guid id)
     {
         return await _context.Ativos.FindAsync(id);
     }
