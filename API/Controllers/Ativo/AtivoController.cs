@@ -11,11 +11,15 @@ public class AtivosController : ControllerBase
     private readonly GetAtivosService _obterAtivos;
     private readonly RemoveAtivoService _removerAtivo;
 
-    public AtivosController(AddAtivoService adicionarAtivo, GetAtivosService obterAtivos, RemoveAtivoService removerAtivo)
+    private readonly GetCotacaoAtivoService _getCotacao;
+
+    public AtivosController(AddAtivoService adicionarAtivo, GetAtivosService obterAtivos, RemoveAtivoService removerAtivo, GetCotacaoAtivoService getCotacao)
     {
         _adicionarAtivo = adicionarAtivo;
         _obterAtivos = obterAtivos;
         _removerAtivo = removerAtivo;
+        _getCotacao = getCotacao;
+
     }
 
     [HttpGet]
@@ -39,5 +43,11 @@ public class AtivosController : ControllerBase
         await _removerAtivo.ExecuteAsync(id);
         return NoContent();
     }
-}
 
+    [HttpGet("{ticker}/cotacao")]
+    public async Task<IActionResult> GetCotacao(string ticker)
+    {
+        var cotacao = await _getCotacao.ExecuteAsync(ticker);
+        return Ok(new { ticker = ticker.ToUpper(), cotacao });
+    }
+}
