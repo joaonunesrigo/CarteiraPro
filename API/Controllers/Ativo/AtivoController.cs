@@ -1,4 +1,4 @@
-using Application.UseCases.Ativos;
+using Application.Services.Ativos;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -7,11 +7,11 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class AtivosController : ControllerBase
 {
-    private readonly AddAtivoUseCase _adicionarAtivo;
-    private readonly GetAtivosUseCase _obterAtivos;
-    private readonly RemoveAtivoUseCase _removerAtivo;
+    private readonly AddAtivoService _adicionarAtivo;
+    private readonly GetAtivosService _obterAtivos;
+    private readonly RemoveAtivoService _removerAtivo;
 
-    public AtivosController(AddAtivoUseCase adicionarAtivo, GetAtivosUseCase obterAtivos, RemoveAtivoUseCase removerAtivo)
+    public AtivosController(AddAtivoService adicionarAtivo, GetAtivosService obterAtivos, RemoveAtivoService removerAtivo)
     {
         _adicionarAtivo = adicionarAtivo;
         _obterAtivos = obterAtivos;
@@ -28,12 +28,7 @@ public class AtivosController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] AddAtivoRequestRecord request)
     {
-        await _adicionarAtivo.ExecuteAsync(
-            request.Ticker,
-            request.Nome,
-            request.PrecoMedio,
-            request.Quantidade,
-            request.Tipo);
+        await _adicionarAtivo.ExecuteAsync(request.Ticker,request.Nome,request.PrecoMedio,request.Quantidade,request.Tipo);
 
         return Created();
     }

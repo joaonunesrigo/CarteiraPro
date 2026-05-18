@@ -1,4 +1,4 @@
-using Application.UseCases.Ativos;
+using Application.Services.Ativos;
 using Infrastructure.DataBase;
 using Infrastructure.Repositories;
 using Domain.Interfaces;
@@ -14,9 +14,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<IAtivoRepository, AtivoRepository>();
 
 // Use Cases
-builder.Services.AddScoped<AddAtivoUseCase>();
-builder.Services.AddScoped<GetAtivosUseCase>();
-builder.Services.AddScoped<RemoveAtivoUseCase>();
+builder.Services.AddScoped<AddAtivoService>();
+builder.Services.AddScoped<GetAtivosService>();
+builder.Services.AddScoped<RemoveAtivoService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

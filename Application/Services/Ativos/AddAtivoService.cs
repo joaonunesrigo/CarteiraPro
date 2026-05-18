@@ -2,13 +2,13 @@ using Domain.Entities;
 using Domain.Interfaces;
 using Domain.Enums;
 
-namespace Application.UseCases.Ativos;
+namespace Application.Services.Ativos;
 
-public class AddAtivoUseCase
+public class AddAtivoService
 {
     private readonly IAtivoRepository _ativoRepository;
 
-    public AddAtivoUseCase(IAtivoRepository ativoRepository)
+    public AddAtivoService(IAtivoRepository ativoRepository)
     {
         _ativoRepository = ativoRepository;
     }

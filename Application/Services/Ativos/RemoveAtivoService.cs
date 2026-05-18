@@ -1,12 +1,12 @@
 using Domain.Interfaces;
 
-namespace Application.UseCases.Ativos;
+namespace Application.Services.Ativos;
 
-public class RemoveAtivoUseCase
+public class RemoveAtivoService
 {
     private readonly IAtivoRepository _ativoRepository;
 
-    public RemoveAtivoUseCase(IAtivoRepository ativoRepository)
+    public RemoveAtivoService(IAtivoRepository ativoRepository)
     {
         _ativoRepository = ativoRepository;
     }
