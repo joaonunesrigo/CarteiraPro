@@ -1,6 +1,6 @@
 <Solution>
-  <Project Path="API/API.csproj" />
-  <Project Path="Application/Application.csproj" />
-  <Project Path="Domain/Domain.csproj" />
-  <Project Path="Infrastructure/Infrastructure.csproj" />
+  <Project Path="Backend/Application/Application.csproj" />
+  <Project Path="Backend/API/API.csproj" />
+  <Project Path="Backend/Domain/Domain.csproj" />
+  <Project Path="Backend/Infrastructure/Infrastructure.csproj" />
 </Solution>
