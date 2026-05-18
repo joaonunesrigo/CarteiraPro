@@ -4,6 +4,7 @@ using Infrastructure.Repositories;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.ExternalServices;
+using Application.Services.Carteira;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,8 @@ builder.Services.AddScoped<AddAtivoService>();
 builder.Services.AddScoped<GetAtivosService>();
 builder.Services.AddScoped<RemoveAtivoService>();
 builder.Services.AddScoped<GetCotacaoAtivoService>();
-builder.Services.AddScoped<GetRentabilidadeAtivoService>();
+builder.Services.AddScoped<GetRentabilidadeAtivosService>();
+builder.Services.AddScoped<GetResumoCarteiraService>();
 
 // External Services
 builder.Services.AddHttpClient<IBrapiService, BrapiService>();

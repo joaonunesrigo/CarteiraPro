@@ -1,14 +1,14 @@
 using Application.Services.Ativos.DTOs;
 using Domain.Interfaces;
 
-namespace Application.Services.Ativos;
+namespace Application.Services.Carteira;
 
-public class GetRentabilidadeAtivoService
+public class GetRentabilidadeAtivosService 
 {
     private readonly IAtivoRepository _ativoRepository;
     private readonly IBrapiService _brapiService;
 
-    public GetRentabilidadeAtivoService(IAtivoRepository ativoRepository, IBrapiService brapiService)
+    public GetRentabilidadeAtivosService(IAtivoRepository ativoRepository, IBrapiService brapiService)
     {
         _ativoRepository = ativoRepository;
         _brapiService = brapiService;

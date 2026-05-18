@@ -1,4 +1,5 @@
 using Application.Services.Ativos;
+using Application.Services.Carteira;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.Ativo;
@@ -11,9 +12,9 @@ public class AtivosController : ControllerBase
     private readonly GetAtivosService _obterAtivos;
     private readonly RemoveAtivoService _removerAtivo;
     private readonly GetCotacaoAtivoService _getCotacao;
-    private readonly GetRentabilidadeAtivoService _getRentabilidade;
+    private readonly GetRentabilidadeAtivosService _getRentabilidade;
 
-    public AtivosController(AddAtivoService adicionarAtivo, GetAtivosService obterAtivos, RemoveAtivoService removerAtivo, GetCotacaoAtivoService getCotacao, GetRentabilidadeAtivoService getRentabilidade)
+    public AtivosController(AddAtivoService adicionarAtivo, GetAtivosService obterAtivos, RemoveAtivoService removerAtivo, GetCotacaoAtivoService getCotacao, GetRentabilidadeAtivosService getRentabilidade)
     {
         _adicionarAtivo = adicionarAtivo;
         _obterAtivos = obterAtivos;
@@ -50,12 +51,5 @@ public class AtivosController : ControllerBase
     {
         var cotacao = await _getCotacao.ExecuteAsync(ticker);
         return Ok(new { ticker = ticker.ToUpper(), cotacao });
-    }
-
-    [HttpGet("rentabilidade")]
-    public async Task<IActionResult> GetRentabilidade()
-    {
-        var resultado = await _getRentabilidade.ExecuteAsync();
-        return Ok(resultado);
     }
 }
