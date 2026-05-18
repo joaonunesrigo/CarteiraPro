@@ -11,6 +11,5 @@ public class Ativo(string ticker, string nome, decimal precoMedio, decimal quant
     public decimal Quantidade { get; private set; } = quantidade;
     public TipoAtivo Tipo { get; private set; } = tipo;
     public DateTime DataCadastro { get; private set; } = DateTime.UtcNow;
-
     public decimal ValorInvestido => PrecoMedio * Quantidade;
 }

@@ -10,15 +10,16 @@ public class AtivosController : ControllerBase
     private readonly AddAtivoService _adicionarAtivo;
     private readonly GetAtivosService _obterAtivos;
     private readonly RemoveAtivoService _removerAtivo;
-
     private readonly GetCotacaoAtivoService _getCotacao;
+    private readonly GetRentabilidadeAtivoService _getRentabilidade;
 
-    public AtivosController(AddAtivoService adicionarAtivo, GetAtivosService obterAtivos, RemoveAtivoService removerAtivo, GetCotacaoAtivoService getCotacao)
+    public AtivosController(AddAtivoService adicionarAtivo, GetAtivosService obterAtivos, RemoveAtivoService removerAtivo, GetCotacaoAtivoService getCotacao, GetRentabilidadeAtivoService getRentabilidade)
     {
         _adicionarAtivo = adicionarAtivo;
         _obterAtivos = obterAtivos;
         _removerAtivo = removerAtivo;
         _getCotacao = getCotacao;
+        _getRentabilidade = getRentabilidade;
 
     }
 
@@ -32,7 +33,7 @@ public class AtivosController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] AddAtivoRequestRecord request)
     {
-        await _adicionarAtivo.ExecuteAsync(request.Ticker, request.Nome, request.PrecoMedio, request.Quantidade, request.Tipo);
+        await _adicionarAtivo.ExecuteAsync(request.Ticker, request.PrecoMedio, request.Quantidade, request.Tipo);
 
         return Created();
     }
@@ -49,5 +50,12 @@ public class AtivosController : ControllerBase
     {
         var cotacao = await _getCotacao.ExecuteAsync(ticker);
         return Ok(new { ticker = ticker.ToUpper(), cotacao });
+    }
+
+    [HttpGet("rentabilidade")]
+    public async Task<IActionResult> GetRentabilidade()
+    {
+        var resultado = await _getRentabilidade.ExecuteAsync();
+        return Ok(resultado);
     }
 }

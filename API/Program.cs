@@ -19,6 +19,7 @@ builder.Services.AddScoped<AddAtivoService>();
 builder.Services.AddScoped<GetAtivosService>();
 builder.Services.AddScoped<RemoveAtivoService>();
 builder.Services.AddScoped<GetCotacaoAtivoService>();
+builder.Services.AddScoped<GetRentabilidadeAtivoService>();
 
 // External Services
 builder.Services.AddHttpClient<IBrapiService, BrapiService>();

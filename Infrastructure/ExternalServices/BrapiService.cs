@@ -31,4 +31,20 @@ public class BrapiService : IBrapiService
 
         return preco;
     }
+
+    public async Task<string> GetNomeAtivoAsync(string ticker)
+    {
+        var response = await _httpClient.GetAsync($"{BaseUrl}/quote/{ticker}?token={_token}");
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync();
+        var doc = JsonDocument.Parse(json);
+
+        var nome = doc.RootElement
+            .GetProperty("results")[0]
+            .GetProperty("shortName")
+            .GetString();
+
+        return nome ?? "Nome não encontrado";
+    }
 }
