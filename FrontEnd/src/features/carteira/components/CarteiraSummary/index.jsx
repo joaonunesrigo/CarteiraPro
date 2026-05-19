@@ -1,0 +1,1 @@
+export { CarteiraSummary } from './CarteiraSummary'

@@ -1,0 +1,1 @@
+export { AtivoTable } from './AtivoTable'

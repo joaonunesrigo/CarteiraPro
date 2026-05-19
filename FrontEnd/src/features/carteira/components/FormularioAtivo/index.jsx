@@ -1,0 +1,1 @@
+export { FormularioAtivo } from './FormularioAtivo'
