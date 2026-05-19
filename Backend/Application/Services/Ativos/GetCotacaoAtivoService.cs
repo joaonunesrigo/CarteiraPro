@@ -1,3 +1,4 @@
+using Application.Exceptions;
 using Domain.Interfaces;
 
 namespace Application.Services.Ativos;
@@ -13,6 +14,12 @@ public class GetCotacaoAtivoService
 
     public async Task<decimal> ExecuteAsync(string ticker)
     {
-        return await _brapiService.GetCotacaoAsync(ticker);
+        var tickerNormalizado = ticker.Trim().ToUpper();
+        var quote = await _brapiService.ObterQuoteAsync(tickerNormalizado);
+
+        if (quote is null)
+            throw new TickerInvalidoException(tickerNormalizado);
+
+        return quote.Cotacao;
     }
 }

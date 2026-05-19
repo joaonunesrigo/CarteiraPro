@@ -1,11 +1,13 @@
-import { Alert } from '../../components/Alert'
-import { AtivoTable } from '../../features/carteira/components/AtivoTable'
-import { CarteiraSummary } from '../../features/carteira/components/CarteiraSummary'
-import { FormularioAtivo } from '../../features/carteira/components/FormularioAtivo'
+import { Alert } from "../../components/Alert";
+import { AtivoTable } from "../../features/carteira/components/AtivoTable";
+import { CarteiraGraficos } from "../../features/carteira/components/CarteiraGraficos";
+import { CarteiraSummary } from "../../features/carteira/components/CarteiraSummary";
+import { FormularioAtivo } from "../../features/carteira/components/FormularioAtivo";
 
 export function Dashboard({
   cartoesResumo,
   linhasAtivos,
+  dadosGraficos,
   carregando,
   erro,
   formularioAtivo,
@@ -35,11 +37,12 @@ export function Dashboard({
         ) : (
           <>
             <CarteiraSummary cartoes={cartoesResumo} />
+            <CarteiraGraficos dadosGraficos={dadosGraficos} />
             <FormularioAtivo {...formularioAtivo} />
             <AtivoTable linhas={linhasAtivos} excluirAtivo={excluirAtivo} />
           </>
         )}
       </main>
     </div>
-  )
+  );
 }

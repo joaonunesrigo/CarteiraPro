@@ -1,18 +1,29 @@
-import { useAdicionarAtivo, useExcluirAtivo } from '../../features/carteira/hooks/useAtivos'
+import { useToastContext } from '../../components/Toast'
+import {
+  useAdicionarAtivo,
+  useExcluirAtivo,
+} from '../../features/carteira/hooks/useAtivos'
 import { useCarteira } from '../../features/carteira/hooks/useCarteira'
 import { Dashboard } from './Dashboard'
 
 export default function DashboardPage() {
-  const { cartoesResumo, linhasAtivos, carregando, erro, recarregar } =
+  const { mostrarToast } = useToastContext()
+  const { cartoesResumo, linhasAtivos, dadosGraficos, carregando, erro, recarregar } =
     useCarteira()
 
-  const formularioAtivo = useAdicionarAtivo(recarregar)
-  const { excluirAtivo } = useExcluirAtivo(recarregar)
+  const tickersCadastrados = linhasAtivos.map((linha) => linha.ticker)
+  const formularioAtivo = useAdicionarAtivo(
+    recarregar,
+    tickersCadastrados,
+    mostrarToast,
+  )
+  const { excluirAtivo } = useExcluirAtivo(recarregar, mostrarToast)
 
   return (
     <Dashboard
       cartoesResumo={cartoesResumo}
       linhasAtivos={linhasAtivos}
+      dadosGraficos={dadosGraficos}
       carregando={carregando}
       erro={erro}
       formularioAtivo={formularioAtivo}

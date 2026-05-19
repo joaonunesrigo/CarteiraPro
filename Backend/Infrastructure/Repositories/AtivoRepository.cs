@@ -19,6 +19,13 @@ public class AtivoRepository : IAtivoRepository
         return await _context.Ativos.FindAsync(id);
     }
 
+    public async Task<Ativo?> GetByTickerAsync(string ticker)
+    {
+        var tickerNormalizado = ticker.Trim().ToUpper();
+        return await _context.Ativos
+            .FirstOrDefaultAsync(a => a.Ticker == tickerNormalizado);
+    }
+
     public async Task<IEnumerable<Ativo>> GetAllAsync()
     {
         return await _context.Ativos.ToListAsync();

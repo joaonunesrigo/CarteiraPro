@@ -1,3 +1,4 @@
+using Application.Exceptions;
 using Application.Services.Ativos;
 using Application.Services.Carteira;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,6 @@ public class AtivosController : ControllerBase
     private readonly GetAtivosService _obterAtivos;
     private readonly RemoveAtivoService _removerAtivo;
     private readonly GetCotacaoAtivoService _getCotacao;
-    private readonly GetRentabilidadeAtivosService _getRentabilidade;
 
     public AtivosController(AddAtivoService adicionarAtivo, GetAtivosService obterAtivos, RemoveAtivoService removerAtivo, GetCotacaoAtivoService getCotacao, GetRentabilidadeAtivosService getRentabilidade)
     {
@@ -20,8 +20,6 @@ public class AtivosController : ControllerBase
         _obterAtivos = obterAtivos;
         _removerAtivo = removerAtivo;
         _getCotacao = getCotacao;
-        _getRentabilidade = getRentabilidade;
-
     }
 
     [HttpGet]
@@ -34,9 +32,24 @@ public class AtivosController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Add([FromBody] AddAtivoRequestRecord request)
     {
-        await _adicionarAtivo.ExecuteAsync(request.Ticker, request.PrecoMedio, request.Quantidade, request.Tipo);
+        try
+        {
+            await _adicionarAtivo.ExecuteAsync(
+                request.Ticker,
+                request.PrecoMedio,
+                request.Quantidade,
+                request.Tipo);
 
-        return Created();
+            return Created();
+        }
+        catch (TickerJaCadastradoException ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
+        catch (TickerInvalidoException ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
     }
 
     [HttpDelete("{id}")]
@@ -49,7 +62,14 @@ public class AtivosController : ControllerBase
     [HttpGet("{ticker}/cotacao")]
     public async Task<IActionResult> GetCotacao(string ticker)
     {
-        var cotacao = await _getCotacao.ExecuteAsync(ticker);
-        return Ok(new { ticker = ticker.ToUpper(), cotacao });
+        try
+        {
+            var cotacao = await _getCotacao.ExecuteAsync(ticker);
+            return Ok(new { ticker = ticker.ToUpper(), cotacao });
+        }
+        catch (TickerInvalidoException ex)
+        {
+            return NotFound(new { mensagem = ex.Message });
+        }
     }
 }

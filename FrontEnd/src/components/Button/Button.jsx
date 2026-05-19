@@ -1,10 +1,10 @@
-import { cn } from '../../utils/cn'
-import { VARIANTES } from './button.styles'
+import { cn } from "../../utils/cn";
+import { VARIANTES } from "./button.styles";
 
 export function Button({
-  variante = 'primary',
+  variante = "primary",
   className,
-  type = 'button',
+  type = "button",
   children,
   ...props
 }) {
@@ -16,5 +16,5 @@ export function Button({
     >
       {children}
     </button>
-  )
+  );
 }

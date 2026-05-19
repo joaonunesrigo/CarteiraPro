@@ -5,6 +5,7 @@ namespace Domain.Interfaces;
 public interface IAtivoRepository
 {
     Task<Ativo?> GetByIdAsync(Guid id);
+    Task<Ativo?> GetByTickerAsync(string ticker);
     Task<IEnumerable<Ativo>> GetAllAsync();
     Task AddAsync(Ativo ativo);
     Task UpdateAsync(Ativo ativo);

@@ -1,5 +1,10 @@
 import { useState } from 'react'
 import { carteiraApi } from '../services/carteira.api'
+import {
+  formularioTemErros,
+  validarFormularioAtivo,
+} from '../utils/validarFormularioAtivo'
+import { normalizarTicker } from '../utils/validarTicker'
 
 const formularioInicial = {
   ticker: '',
@@ -8,31 +13,81 @@ const formularioInicial = {
   tipo: 0,
 }
 
-export function useAdicionarAtivo(aoConcluir) {
+const errosIniciais = {
+  ticker: null,
+  precoMedio: null,
+  quantidade: null,
+  tipo: null,
+}
+
+export function useAdicionarAtivo(
+  aoConcluir,
+  tickersCadastrados = [],
+  mostrarToast,
+) {
   const [formulario, setFormulario] = useState(formularioInicial)
+  const [errosCampos, setErrosCampos] = useState(errosIniciais)
   const [enviando, setEnviando] = useState(false)
-  const [erro, setErro] = useState(null)
 
   function atualizarCampo(campo) {
-    return (evento) =>
+    return (evento) => {
       setFormulario((atual) => ({ ...atual, [campo]: evento.target.value }))
+      setErrosCampos((atual) => ({ ...atual, [campo]: null }))
+    }
+  }
+
+  async function validarTickerExterno(ticker) {
+    try {
+      await carteiraApi.obterCotacao(ticker)
+      return null
+    } catch {
+      return `O ticker ${ticker} não foi encontrado. Verifique o símbolo e tente novamente.`
+    }
   }
 
   async function enviarFormulario(evento) {
     evento.preventDefault()
     setEnviando(true)
-    setErro(null)
+
+    const erros = validarFormularioAtivo(formulario, tickersCadastrados)
+
+    if (formularioTemErros(erros)) {
+      setErrosCampos((atual) => ({ ...atual, ...erros }))
+      setEnviando(false)
+      return
+    }
+
+    const ticker = normalizarTicker(formulario.ticker)
+    const erroBrapi = await validarTickerExterno(ticker)
+
+    if (erroBrapi) {
+      setErrosCampos((atual) => ({ ...atual, ticker: erroBrapi }))
+      setEnviando(false)
+      return
+    }
+
     try {
       await carteiraApi.adicionarAtivo({
-        ticker: formulario.ticker.trim().toUpperCase(),
+        ticker,
         precoMedio: Number(formulario.precoMedio),
         quantidade: Number(formulario.quantidade),
         tipo: Number(formulario.tipo),
       })
       setFormulario(formularioInicial)
+      setErrosCampos(errosIniciais)
+      mostrarToast(`${ticker} adicionado à carteira.`, 'sucesso')
       aoConcluir()
     } catch (err) {
-      setErro(err.message)
+      const mensagem = err.message || 'Erro ao adicionar ativo'
+      if (
+        mensagem.toLowerCase().includes('ticker') ||
+        mensagem.toLowerCase().includes('encontrado') ||
+        mensagem.toLowerCase().includes('cadastrado')
+      ) {
+        setErrosCampos((atual) => ({ ...atual, ticker: mensagem }))
+      } else {
+        mostrarToast(mensagem, 'erro')
+      }
     } finally {
       setEnviando(false)
     }
@@ -40,18 +95,23 @@ export function useAdicionarAtivo(aoConcluir) {
 
   return {
     formulario,
+    errosCampos,
     atualizarCampo,
     enviando,
-    erro,
     enviarFormulario,
   }
 }
 
-export function useExcluirAtivo(aoConcluir) {
+export function useExcluirAtivo(aoConcluir, mostrarToast) {
   async function excluirAtivo(id) {
     if (!id || !confirm('Remover este ativo?')) return
-    await carteiraApi.removerAtivo(id)
-    aoConcluir()
+    try {
+      await carteiraApi.removerAtivo(id)
+      mostrarToast?.('Ativo removido da carteira.', 'sucesso')
+      aoConcluir()
+    } catch (err) {
+      mostrarToast?.(err.message || 'Erro ao remover ativo', 'erro')
+    }
   }
 
   return { excluirAtivo }
