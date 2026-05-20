@@ -1,0 +1,1 @@
+export { PainelOperacoesAtivo } from './PainelOperacoesAtivo'

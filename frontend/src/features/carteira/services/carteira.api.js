@@ -10,6 +10,13 @@ export const carteiraApi = {
     apiClient('/ativos', { method: 'POST', body: JSON.stringify(dados) }),
   removerAtivo: (id) => apiClient(`/ativos/${id}`, { method: 'DELETE' }),
   removerTodosAtivos: () => apiClient('/ativos/todos', { method: 'DELETE' }),
+  listarOperacoes: (ativoId) => apiClient(`/ativos/${ativoId}/operacoes`),
+  adicionarOperacao: (ativoId, dados) =>
+    apiClient(`/ativos/${ativoId}/operacoes`, {
+      method: 'POST',
+      body: JSON.stringify(dados),
+    }),
+  removerOperacao: (id) => apiClient(`/operacoes/${id}`, { method: 'DELETE' }),
   previewImportacaoB3: (arquivo) =>
     apiUpload('/ativos/importar/preview', arquivo),
   importarAtivos: (dados) =>

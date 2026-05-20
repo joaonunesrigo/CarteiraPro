@@ -18,7 +18,7 @@ export function ConfirmDialog({
     >
       <button
         type="button"
-        className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
+        className="absolute inset-0 animate-modal-overlay-in bg-slate-950/70 backdrop-blur-sm"
         aria-label="Fechar"
         onClick={onCancelar}
       />
@@ -28,7 +28,7 @@ export function ConfirmDialog({
         aria-modal="true"
         aria-labelledby="dialogo-titulo"
         aria-describedby="dialogo-mensagem"
-        className="relative w-full max-w-md rounded-xl border border-slate-700 bg-slate-900 p-6 shadow-xl"
+        className="relative w-full max-w-md animate-modal-content-in rounded-xl border border-slate-700 bg-slate-900 p-6 opacity-0 shadow-xl"
       >
         <h2 id="dialogo-titulo" className="text-lg font-semibold text-white">
           {titulo}

@@ -1,0 +1,1 @@
+export { IconeLixeira } from './IconeLixeira'

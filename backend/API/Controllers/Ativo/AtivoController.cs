@@ -1,8 +1,10 @@
 using API.Controllers.Ativo.Records;
+using API.Controllers.Operacao.Records;
 using Application.Dtos;
 using Application.Exceptions;
 using Application.Services.Ativos;
 using Application.Services.Carteira;
+using Application.Services.Operacoes;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers.Ativo;
@@ -18,6 +20,8 @@ public class AtivosController : ControllerBase
     private readonly GetCotacaoAtivoService _getCotacao;
     private readonly PreviewImportacaoB3Service _previewImportacaoB3;
     private readonly ImportarAtivosService _importarAtivos;
+    private readonly GetOperacoesService _obterOperacoes;
+    private readonly AddOperacaoService _adicionarOperacao;
 
     public AtivosController(
         AddAtivoService adicionarAtivo,
@@ -26,7 +30,9 @@ public class AtivosController : ControllerBase
         RemoveAllAtivosService removerTodosAtivos,
         GetCotacaoAtivoService getCotacao,
         PreviewImportacaoB3Service previewImportacaoB3,
-        ImportarAtivosService importarAtivos)
+        ImportarAtivosService importarAtivos,
+        GetOperacoesService obterOperacoes,
+        AddOperacaoService adicionarOperacao)
     {
         _adicionarAtivo = adicionarAtivo;
         _obterAtivos = obterAtivos;
@@ -35,6 +41,8 @@ public class AtivosController : ControllerBase
         _getCotacao = getCotacao;
         _previewImportacaoB3 = previewImportacaoB3;
         _importarAtivos = importarAtivos;
+        _obterOperacoes = obterOperacoes;
+        _adicionarOperacao = adicionarOperacao;
     }
 
     [HttpGet]
@@ -62,6 +70,10 @@ public class AtivosController : ControllerBase
             return BadRequest(new { mensagem = ex.Message });
         }
         catch (TickerInvalidoException ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
+        }
+        catch (OperacaoInvalidaException ex)
         {
             return BadRequest(new { mensagem = ex.Message });
         }
@@ -124,6 +136,39 @@ public class AtivosController : ControllerBase
         catch (TickerInvalidoException ex)
         {
             return NotFound(new { mensagem = ex.Message });
+        }
+    }
+
+    [HttpGet("{id:guid}/operacoes")]
+    public async Task<IActionResult> GetOperacoes(Guid id)
+    {
+        var operacoes = await _obterOperacoes.ExecuteAsync(id);
+        return Ok(operacoes);
+    }
+
+    [HttpPost("{id:guid}/operacoes")]
+    public async Task<IActionResult> AddOperacao(Guid id, [FromBody] AddOperacaoRequestRecord request)
+    {
+        try
+        {
+            await _adicionarOperacao.ExecuteAsync(
+                id,
+                request.Tipo,
+                request.Data,
+                request.Quantidade,
+                request.PrecoUnitario,
+                request.Taxas,
+                request.Observacao);
+
+            return Created();
+        }
+        catch (AtivoNaoEncontradoException ex)
+        {
+            return NotFound(new { mensagem = ex.Message });
+        }
+        catch (OperacaoInvalidaException ex)
+        {
+            return BadRequest(new { mensagem = ex.Message });
         }
     }
 }

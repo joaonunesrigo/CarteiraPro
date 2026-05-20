@@ -1,4 +1,5 @@
 using Application.Services.Ativos.DTOs;
+using Application.Services.Operacoes;
 using Domain.Interfaces;
 
 namespace Application.Services.Carteira;
@@ -7,11 +8,16 @@ public class GetRentabilidadeAtivosService
 {
     private readonly IAtivoRepository _ativoRepository;
     private readonly IBrapiService _brapiService;
+    private readonly CalcularPosicaoAtivoService _calcularPosicao;
 
-    public GetRentabilidadeAtivosService(IAtivoRepository ativoRepository, IBrapiService brapiService)
+    public GetRentabilidadeAtivosService(
+        IAtivoRepository ativoRepository,
+        IBrapiService brapiService,
+        CalcularPosicaoAtivoService calcularPosicao)
     {
         _ativoRepository = ativoRepository;
         _brapiService = brapiService;
+        _calcularPosicao = calcularPosicao;
     }
 
     public async Task<IEnumerable<RentabilidadeDto>> ExecuteAsync()
@@ -21,19 +27,24 @@ public class GetRentabilidadeAtivosService
             return [];
 
         var cotacoes = await _brapiService.ObterQuotesAsync(ativos.Select(a => a.Ticker));
+        var posicoes = await _calcularPosicao.ExecuteAsync(ativos);
         var resultado = new List<RentabilidadeDto>(ativos.Count);
 
         foreach (var ativo in ativos)
         {
+            var posicao = posicoes[ativo.Id];
+            if (posicao.Quantidade <= 0)
+                continue;
+
             var cotacao = cotacoes.TryGetValue(ativo.Ticker, out var quote)
                 ? quote.Cotacao
-                : ativo.PrecoMedio;
+                : posicao.PrecoMedio;
 
-            var valorInvestido = ativo.PrecoMedio * ativo.Quantidade;
-            var valorAtual = cotacao * ativo.Quantidade;
+            var valorInvestido = posicao.ValorInvestido;
+            var valorAtual = cotacao * posicao.Quantidade;
             var rentabilidadeReais = valorAtual - valorInvestido;
-            var rentabilidadePercent = ativo.PrecoMedio > 0
-                ? (cotacao - ativo.PrecoMedio) / ativo.PrecoMedio * 100
+            var rentabilidadePercent = posicao.PrecoMedio > 0
+                ? (cotacao - posicao.PrecoMedio) / posicao.PrecoMedio * 100
                 : 0;
 
             resultado.Add(new RentabilidadeDto
@@ -41,9 +52,9 @@ public class GetRentabilidadeAtivosService
                 Id = ativo.Id,
                 Ticker = ativo.Ticker,
                 Tipo = ativo.Tipo,
-                PrecoMedio = ativo.PrecoMedio,
+                PrecoMedio = posicao.PrecoMedio,
                 CotacaoAtual = cotacao,
-                Quantidade = ativo.Quantidade,
+                Quantidade = posicao.Quantidade,
                 ValorInvestido = valorInvestido,
                 ValorAtual = valorAtual,
                 RentabilidadeReais = rentabilidadeReais,

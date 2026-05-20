@@ -2,14 +2,22 @@ using Domain.Enums;
 
 namespace Domain.Entities;
 
-public class Ativo(string ticker, string nome, decimal precoMedio, decimal quantidade, TipoAtivo tipo)
+public class Ativo
 {
+    private Ativo()
+    {
+    }
+
+    public Ativo(string ticker, string nome, TipoAtivo tipo)
+    {
+        Ticker = ticker.ToUpper();
+        Nome = nome;
+        Tipo = tipo;
+    }
+
     public Guid Id { get; private set; } = Guid.NewGuid();
-    public string Ticker { get; private set; } = ticker.ToUpper();
-    public string Nome { get; private set; } = nome;
-    public decimal PrecoMedio { get; private set; } = precoMedio;
-    public decimal Quantidade { get; private set; } = quantidade;
-    public TipoAtivo Tipo { get; private set; } = tipo;
+    public string Ticker { get; private set; } = string.Empty;
+    public string Nome { get; private set; } = string.Empty;
+    public TipoAtivo Tipo { get; private set; }
     public DateTime DataCadastro { get; private set; } = DateTime.UtcNow;
-    public decimal ValorInvestido => PrecoMedio * Quantidade;
 }

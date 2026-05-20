@@ -1,7 +1,13 @@
 import { Button } from '../../../../components/Button'
 import { DataTable } from '../../../../components/DataTable'
+import { IconeLixeira } from '../../../../components/Icons'
 
-export function AtivoTable({ linhas, excluirAtivo, excluirTodosAtivos }) {
+export function AtivoTable({
+  linhas,
+  excluirAtivo,
+  excluirTodosAtivos,
+  abrirPainelOperacoes,
+}) {
   const colunas = [
     {
       chave: 'ticker',
@@ -53,12 +59,20 @@ export function AtivoTable({ linhas, excluirAtivo, excluirTodosAtivos }) {
       chave: 'acoes',
       titulo: '',
       render: (ativo) => (
-        <Button
-          variante="danger"
-          onClick={() => excluirAtivo(ativo.id, ativo.ticker)}
-        >
-          Excluir
-        </Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button variante="secondary" onClick={() => abrirPainelOperacoes(ativo)}>
+            Operações
+          </Button>
+          <Button
+            variante="danger"
+            onClick={() => excluirAtivo(ativo.id, ativo.ticker)}
+            aria-label={`Excluir ${ativo.ticker}`}
+            title="Excluir ativo"
+            className="p-1"
+          >
+            <IconeLixeira />
+          </Button>
+        </div>
       ),
     },
   ]

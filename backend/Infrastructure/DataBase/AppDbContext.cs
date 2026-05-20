@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
 
     public DbSet<Ativo> Ativos { get; set; }
     public DbSet<Provento> Proventos { get; set; }
+    public DbSet<Operacao> Operacoes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -19,8 +20,19 @@ public class AppDbContext : DbContext
             entity.HasKey(a => a.Id);
             entity.Property(a => a.Ticker).IsRequired().HasMaxLength(10);
             entity.Property(a => a.Nome).IsRequired().HasMaxLength(100);
-            entity.Property(a => a.PrecoMedio).HasPrecision(18, 2);
-            entity.Property(a => a.Quantidade).HasPrecision(18, 8);
+        });
+
+        modelBuilder.Entity<Operacao>(entity =>
+        {
+            entity.HasKey(o => o.Id);
+            entity.Property(o => o.Quantidade).HasPrecision(18, 8);
+            entity.Property(o => o.PrecoUnitario).HasPrecision(18, 6);
+            entity.Property(o => o.Taxas).HasPrecision(18, 2);
+            entity.Property(o => o.Observacao).HasMaxLength(500);
+            entity.HasOne<Ativo>()
+                .WithMany()
+                .HasForeignKey(o => o.AtivoId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<Provento>(entity =>

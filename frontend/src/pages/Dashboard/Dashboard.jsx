@@ -5,6 +5,7 @@ import { CarteiraGraficos } from '../../features/carteira/components/CarteiraGra
 import { CarteiraSummary } from '../../features/carteira/components/CarteiraSummary'
 import { FormularioAtivo } from '../../features/carteira/components/FormularioAtivo'
 import { ImportadorB3 } from '../../features/carteira/components/ImportadorB3'
+import { PainelOperacoesAtivo } from '../../features/carteira/components/PainelOperacoesAtivo'
 import { PainelProventos } from '../../features/proventos/components/PainelProventos'
 
 export function Dashboard({
@@ -18,6 +19,7 @@ export function Dashboard({
   erro,
   formularioAtivo,
   importadorB3,
+  operacoesAtivo,
   painelProventos,
   excluirAtivo,
   excluirTodosAtivos,
@@ -32,7 +34,9 @@ export function Dashboard({
           linhas={linhasAtivos}
           excluirAtivo={excluirAtivo}
           excluirTodosAtivos={excluirTodosAtivos}
+          abrirPainelOperacoes={operacoesAtivo.abrirPainel}
         />
+        <PainelOperacoesAtivo {...operacoesAtivo} />
       </>
     ),
     graficos: <CarteiraGraficos dadosGraficos={dadosGraficos} />,

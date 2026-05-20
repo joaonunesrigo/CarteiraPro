@@ -7,6 +7,7 @@ import {
 } from '../../features/carteira/hooks/useAtivos'
 import { useImportarB3 } from '../../features/carteira/hooks/useImportarB3'
 import { useCarteira } from '../../features/carteira/hooks/useCarteira'
+import { useOperacoesAtivo } from '../../features/carteira/hooks/useOperacoesAtivo'
 import { useImportarMovimentacaoB3 } from '../../features/proventos/hooks/useImportarMovimentacaoB3'
 import { useProventos } from '../../features/proventos/hooks/useProventos'
 import { ABA_INICIAL_DASHBOARD, ABAS_DASHBOARD } from './dashboardAbas.constants'
@@ -31,6 +32,11 @@ export default function DashboardPage() {
     solicitarConfirmacao,
   )
   const importadorB3 = useImportarB3(recarregar, mostrarToast)
+  const operacoesAtivo = useOperacoesAtivo(
+    recarregar,
+    mostrarToast,
+    solicitarConfirmacao,
+  )
   const proventos = useProventos()
   const importadorMovimentacaoB3 = useImportarMovimentacaoB3(
     proventos.recarregar,
@@ -49,6 +55,7 @@ export default function DashboardPage() {
       erro={erro}
       formularioAtivo={formularioAtivo}
       importadorB3={importadorB3}
+      operacoesAtivo={operacoesAtivo}
       painelProventos={{
         ...proventos,
         importador: importadorMovimentacaoB3,
