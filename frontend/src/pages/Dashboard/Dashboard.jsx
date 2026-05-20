@@ -18,6 +18,7 @@ export function Dashboard({
   formularioAtivo,
   importadorB3,
   excluirAtivo,
+  excluirTodosAtivos,
 }) {
   const paineis = {
     carteira: (
@@ -25,7 +26,11 @@ export function Dashboard({
         <CarteiraSummary cartoes={cartoesResumo} />
         <ImportadorB3 {...importadorB3} />
         <FormularioAtivo {...formularioAtivo} />
-        <AtivoTable linhas={linhasAtivos} excluirAtivo={excluirAtivo} />
+        <AtivoTable
+          linhas={linhasAtivos}
+          excluirAtivo={excluirAtivo}
+          excluirTodosAtivos={excluirTodosAtivos}
+        />
       </>
     ),
     graficos: <CarteiraGraficos dadosGraficos={dadosGraficos} />,

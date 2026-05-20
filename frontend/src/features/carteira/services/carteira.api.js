@@ -9,6 +9,7 @@ export const carteiraApi = {
   adicionarAtivo: (dados) =>
     apiClient('/ativos', { method: 'POST', body: JSON.stringify(dados) }),
   removerAtivo: (id) => apiClient(`/ativos/${id}`, { method: 'DELETE' }),
+  removerTodosAtivos: () => apiClient('/ativos/todos', { method: 'DELETE' }),
   previewImportacaoB3: (arquivo) =>
     apiUpload('/ativos/importar/preview', arquivo),
   importarAtivos: (dados) =>

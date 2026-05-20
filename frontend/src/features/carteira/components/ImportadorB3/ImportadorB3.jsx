@@ -34,8 +34,11 @@ export function ImportadorB3({
           Minhas carteiras → Investimentos → Posição
         </strong>
         , filtre e baixe em{' '}
-        <strong className="text-slate-300">Excel (.xlsx)</strong>. O arquivo não
-        traz preço médio — preencha na tabela abaixo.
+        <strong className="text-slate-300">Excel (.xlsx)</strong>. São importadas
+        as abas <strong className="text-slate-300">Ações</strong>,{' '}
+        <strong className="text-slate-300">Fundo de Investimento</strong> e{' '}
+        <strong className="text-slate-300">Empréstimos</strong> (ativos em
+        aluguel). O arquivo não traz preço médio — preencha na tabela abaixo.
       </p>
 
       <div className="flex flex-wrap items-center gap-3">

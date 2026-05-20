@@ -52,4 +52,15 @@ public class AtivoRepository : IAtivoRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    public async Task<int> DeleteAllAsync()
+    {
+        var ativos = await _context.Ativos.ToListAsync();
+        if (ativos.Count == 0)
+            return 0;
+
+        _context.Ativos.RemoveRange(ativos);
+        await _context.SaveChangesAsync();
+        return ativos.Count;
+    }
 }

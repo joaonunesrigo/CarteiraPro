@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Application.Exceptions;
 using ClosedXML.Excel;
 using Domain.Enums;
@@ -6,9 +7,14 @@ using Domain.Models;
 
 namespace Infrastructure.Importacao;
 
-public class B3PosicaoParser : IB3PosicaoParser
+public partial class B3PosicaoParser : IB3PosicaoParser
 {
-    private static readonly string[] AbasPosicao = ["Acoes", "Fundo de Investimento"];
+    private static readonly (string[] Nomes, TipoAtivo TipoPadrao, bool TickerNoProduto)[] ConfigAbas =
+    [
+        (["Acoes"], TipoAtivo.AcaoBR, false),
+        (["Fundo de Investimento"], TipoAtivo.FII, false),
+        (["Empréstimos", "Emprestimos"], TipoAtivo.AcaoBR, true),
+    ];
 
     private static readonly Dictionary<string, string> AliasesColunas = new(StringComparer.OrdinalIgnoreCase)
     {
@@ -27,41 +33,78 @@ public class B3PosicaoParser : IB3PosicaoParser
         using var workbook = new XLWorkbook(arquivo);
         var linhas = new List<LinhaPosicaoB3>();
 
-        foreach (var nomeAba in AbasPosicao)
+        foreach (var (nomes, tipoPadrao, tickerNoProduto) in ConfigAbas)
         {
-            if (!workbook.Worksheets.TryGetWorksheet(nomeAba, out var planilha))
+            var planilha = ObterPlanilha(workbook, nomes);
+            if (planilha is null)
                 continue;
 
-            linhas.AddRange(LerAba(planilha, nomeAba));
+            var nomeAba = planilha.Name;
+            linhas.AddRange(LerAba(planilha, nomeAba, tipoPadrao, tickerNoProduto));
         }
 
         if (linhas.Count == 0)
             throw new ArquivoB3InvalidoException(
-                "Nenhum ativo encontrado. Use o Excel de posição da B3 (abas Acoes e/ou Fundo de Investimento).");
+                "Nenhum ativo encontrado. Use o Excel de posição da B3 (abas Acoes, Fundo de Investimento e/ou Empréstimos).");
 
         return linhas
             .GroupBy(l => l.Ticker, StringComparer.OrdinalIgnoreCase)
-            .Select(g => g.First())
+            .Select(ConsolidarGrupo)
             .ToList();
     }
 
-    private static IEnumerable<LinhaPosicaoB3> LerAba(IXLWorksheet planilha, string nomeAba)
+    private static IXLWorksheet? ObterPlanilha(XLWorkbook workbook, string[] nomes)
+    {
+        foreach (var planilha in workbook.Worksheets)
+        {
+            foreach (var nome in nomes)
+            {
+                if (planilha.Name.Equals(nome, StringComparison.OrdinalIgnoreCase))
+                    return planilha;
+            }
+        }
+
+        return null;
+    }
+
+    private static LinhaPosicaoB3 ConsolidarGrupo(IEnumerable<LinhaPosicaoB3> grupo)
+    {
+        var lista = grupo.ToList();
+        if (lista.Count == 1)
+            return lista[0];
+
+        var custodia = lista.FirstOrDefault(l =>
+            l.OrigemAba.Equals("Acoes", StringComparison.OrdinalIgnoreCase)
+            || l.OrigemAba.Equals("Fundo de Investimento", StringComparison.OrdinalIgnoreCase));
+
+        if (custodia is not null)
+            return custodia;
+
+        return lista.OrderByDescending(l => l.Quantidade).First();
+    }
+
+    private static IEnumerable<LinhaPosicaoB3> LerAba(
+        IXLWorksheet planilha,
+        string nomeAba,
+        TipoAtivo tipoPadrao,
+        bool tickerNoProduto)
     {
         var ultimaLinha = planilha.LastRowUsed()?.RowNumber() ?? 0;
         if (ultimaLinha == 0)
             yield break;
 
-        var (linhaCabecalho, colunas) = EncontrarCabecalho(planilha, ultimaLinha);
-        if (linhaCabecalho == 0 || !colunas.ContainsKey("ticker"))
+        var (linhaCabecalho, colunas) = EncontrarCabecalho(planilha, ultimaLinha, tickerNoProduto);
+        if (linhaCabecalho == 0)
             yield break;
-
-        var tipoPadrao = nomeAba.Equals("Fundo de Investimento", StringComparison.OrdinalIgnoreCase)
-            ? TipoAtivo.FII
-            : TipoAtivo.AcaoBR;
 
         for (var linha = linhaCabecalho + 1; linha <= ultimaLinha; linha++)
         {
+            var produto = LerTexto(planilha, linha, colunas, "produto");
             var ticker = LerTexto(planilha, linha, colunas, "ticker");
+
+            if (string.IsNullOrWhiteSpace(ticker) && !string.IsNullOrWhiteSpace(produto))
+                ticker = ExtrairTickerDoProduto(produto);
+
             if (string.IsNullOrWhiteSpace(ticker))
                 continue;
 
@@ -76,7 +119,6 @@ public class B3PosicaoParser : IB3PosicaoParser
             if (precoFechamento is 0)
                 precoFechamento = null;
 
-            var produto = LerTexto(planilha, linha, colunas, "produto");
             var tipo = InferirTipo(ticker, tipoPadrao);
 
             yield return new LinhaPosicaoB3
@@ -93,7 +135,8 @@ public class B3PosicaoParser : IB3PosicaoParser
 
     private static (int LinhaCabecalho, Dictionary<string, int> Colunas) EncontrarCabecalho(
         IXLWorksheet planilha,
-        int ultimaLinha)
+        int ultimaLinha,
+        bool tickerNoProduto)
     {
         var limite = Math.Min(ultimaLinha, 15);
 
@@ -112,12 +155,30 @@ public class B3PosicaoParser : IB3PosicaoParser
                     colunas[chave] = col;
             }
 
-            if (colunas.ContainsKey("ticker"))
+            var cabecalhoValido = colunas.ContainsKey("ticker")
+                || (tickerNoProduto && colunas.ContainsKey("produto") && colunas.ContainsKey("quantidade"));
+
+            if (cabecalhoValido)
                 return (linha, colunas);
         }
 
         return (0, new Dictionary<string, int>());
     }
+
+    private static string? ExtrairTickerDoProduto(string produto)
+    {
+        var texto = produto.Trim();
+        if (string.IsNullOrEmpty(texto))
+            return null;
+
+        var antesDoHifen = texto.Split(" - ", 2, StringSplitOptions.TrimEntries)[0];
+        var candidato = antesDoHifen.Split(' ', StringSplitOptions.RemoveEmptyEntries)[0];
+
+        return TickerRegex().IsMatch(candidato) ? candidato.ToUpperInvariant() : null;
+    }
+
+    [GeneratedRegex(@"^[A-Z][A-Z0-9]{3}\d{1,2}$", RegexOptions.IgnoreCase)]
+    private static partial Regex TickerRegex();
 
     private static bool EhLinhaTotal(IXLWorksheet planilha, int linha)
     {

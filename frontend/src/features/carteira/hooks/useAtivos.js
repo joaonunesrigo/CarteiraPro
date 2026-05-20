@@ -125,5 +125,31 @@ export function useExcluirAtivo(aoConcluir, mostrarToast, solicitarConfirmacao) 
     }
   }
 
-  return { excluirAtivo }
+  async function excluirTodosAtivos(quantidade) {
+    if (!quantidade) return
+
+    const confirmou = await solicitarConfirmacao({
+      titulo: 'Remover todos os ativos',
+      mensagem: `Deseja remover os ${quantidade} ativos da carteira? Esta ação não pode ser desfeita.`,
+      textoConfirmar: 'Remover todos',
+      textoCancelar: 'Cancelar',
+      variante: 'perigo',
+    })
+
+    if (!confirmou) return
+
+    try {
+      const resultado = await carteiraApi.removerTodosAtivos()
+      const removidos = resultado?.removidos ?? quantidade
+      mostrarToast?.(
+        `${removidos} ativo(s) removido(s) da carteira.`,
+        'sucesso',
+      )
+      aoConcluir()
+    } catch (err) {
+      mostrarToast?.(err.message || 'Erro ao remover ativos', 'erro')
+    }
+  }
+
+  return { excluirAtivo, excluirTodosAtivos }
 }

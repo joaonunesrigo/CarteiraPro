@@ -14,6 +14,7 @@ public class AtivosController : ControllerBase
     private readonly AddAtivoService _adicionarAtivo;
     private readonly GetAtivosService _obterAtivos;
     private readonly RemoveAtivoService _removerAtivo;
+    private readonly RemoveAllAtivosService _removerTodosAtivos;
     private readonly GetCotacaoAtivoService _getCotacao;
     private readonly PreviewImportacaoB3Service _previewImportacaoB3;
     private readonly ImportarAtivosService _importarAtivos;
@@ -22,6 +23,7 @@ public class AtivosController : ControllerBase
         AddAtivoService adicionarAtivo,
         GetAtivosService obterAtivos,
         RemoveAtivoService removerAtivo,
+        RemoveAllAtivosService removerTodosAtivos,
         GetCotacaoAtivoService getCotacao,
         PreviewImportacaoB3Service previewImportacaoB3,
         ImportarAtivosService importarAtivos)
@@ -29,6 +31,7 @@ public class AtivosController : ControllerBase
         _adicionarAtivo = adicionarAtivo;
         _obterAtivos = obterAtivos;
         _removerAtivo = removerAtivo;
+        _removerTodosAtivos = removerTodosAtivos;
         _getCotacao = getCotacao;
         _previewImportacaoB3 = previewImportacaoB3;
         _importarAtivos = importarAtivos;
@@ -62,6 +65,13 @@ public class AtivosController : ControllerBase
         {
             return BadRequest(new { mensagem = ex.Message });
         }
+    }
+
+    [HttpDelete("todos")]
+    public async Task<IActionResult> DeleteAll()
+    {
+        var removidos = await _removerTodosAtivos.ExecuteAsync();
+        return Ok(new { removidos });
     }
 
     [HttpDelete("{id}")]

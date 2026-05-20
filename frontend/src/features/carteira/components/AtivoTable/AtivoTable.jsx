@@ -3,13 +3,24 @@ import { EmptyState } from '../../../../components/EmptyState'
 import { Panel } from '../../../../components/Panel'
 import { SignedValue } from '../../../../components/SignedValue'
 
-export function AtivoTable({ linhas, excluirAtivo }) {
+export function AtivoTable({ linhas, excluirAtivo, excluirTodosAtivos }) {
   if (!linhas.length) {
     return <EmptyState>Nenhum ativo na carteira.</EmptyState>
   }
 
   return (
-    <Panel titulo="Ativos">
+    <Panel
+      titulo="Ativos"
+      acao={
+        <Button
+          variante="perigo"
+          type="button"
+          onClick={() => excluirTodosAtivos(linhas.length)}
+        >
+          Excluir todos
+        </Button>
+      }
+    >
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] text-left text-sm">
           <thead className="bg-slate-900 text-slate-400">

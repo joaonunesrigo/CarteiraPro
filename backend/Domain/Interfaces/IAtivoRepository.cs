@@ -10,4 +10,5 @@ public interface IAtivoRepository
     Task AddAsync(Ativo ativo);
     Task UpdateAsync(Ativo ativo);
     Task DeleteAsync(Guid id);
+    Task<int> DeleteAllAsync();
 }

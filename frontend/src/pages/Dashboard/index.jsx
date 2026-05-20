@@ -23,7 +23,7 @@ export default function DashboardPage() {
     tickersCadastrados,
     mostrarToast,
   )
-  const { excluirAtivo } = useExcluirAtivo(
+  const { excluirAtivo, excluirTodosAtivos } = useExcluirAtivo(
     recarregar,
     mostrarToast,
     solicitarConfirmacao,
@@ -43,6 +43,7 @@ export default function DashboardPage() {
       formularioAtivo={formularioAtivo}
       importadorB3={importadorB3}
       excluirAtivo={excluirAtivo}
+      excluirTodosAtivos={excluirTodosAtivos}
     />
   )
 }

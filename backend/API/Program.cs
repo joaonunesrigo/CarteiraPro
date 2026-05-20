@@ -35,6 +35,7 @@ builder.Services.AddScoped<IAtivoRepository, AtivoRepository>();
 builder.Services.AddScoped<AddAtivoService>();
 builder.Services.AddScoped<GetAtivosService>();
 builder.Services.AddScoped<RemoveAtivoService>();
+builder.Services.AddScoped<RemoveAllAtivosService>();
 builder.Services.AddScoped<GetCotacaoAtivoService>();
 builder.Services.AddScoped<PreviewImportacaoB3Service>();
 builder.Services.AddScoped<ImportarAtivosService>();
