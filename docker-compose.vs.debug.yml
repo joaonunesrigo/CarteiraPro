@@ -1,0 +1,9 @@
+# Apenas metadados de depuração — build fica no docker-compose.yml (modo Regular)
+services:
+  api:
+    labels:
+      com.microsoft.visualstudio.debuggee.program: "dotnet"
+      com.microsoft.visualstudio.debuggee.arguments: "API.dll"
+      com.microsoft.visualstudio.debuggee.workingdirectory: "/app"
+      com.microsoft.visualstudio.launch-url.path-query: "/swagger"
+      com.microsoft.visualstudio.project: "Backend\\API\\API.csproj"

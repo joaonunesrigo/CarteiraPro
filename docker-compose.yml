@@ -22,7 +22,7 @@ services:
   api:
     build:
       context: ./Backend
-      dockerfile: Dockerfile
+      dockerfile: API/Dockerfile
     container_name: carteirapro-api
     restart: unless-stopped
     env_file:

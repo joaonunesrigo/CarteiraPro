@@ -4,6 +4,14 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
+    <!-- Contexto = Backend; Dockerfile nesta pasta (API/) -->
+    <DockerfileContext>..</DockerfileContext>
+    <DockerfileFile>Dockerfile</DockerfileFile>
+    <DockerDevelopmentMode>Regular</DockerDevelopmentMode>
+    <ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
+    <DockerComposeBuildOnly>False</DockerComposeBuildOnly>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,6 +22,7 @@
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
   </ItemGroup>
 
   <ItemGroup>

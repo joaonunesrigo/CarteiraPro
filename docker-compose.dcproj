@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" Sdk="Microsoft.Docker.Sdk">
+  <PropertyGroup Label="Globals">
+    <ProjectVersion>2.1</ProjectVersion>
+    <DockerTargetOS>Linux</DockerTargetOS>
+    <ProjectGuid>f8a4c2e1-9b3d-4f6a-8c1e-2d5a7b9e0f31</ProjectGuid>
+    <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
+    <DockerLaunchBrowser>true</DockerLaunchBrowser>
+    <DockerServiceName>api</DockerServiceName>
+    <DockerServiceUrl>http://localhost:5122/swagger</DockerServiceUrl>
+    <DependencyAwareStart>True</DependencyAwareStart>
+    <DockerComposeEnvFilePath>.env</DockerComposeEnvFilePath>
+    <DockerDevelopmentMode>Regular</DockerDevelopmentMode>
+    <ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
+    <DockerComposeBuildOnly>False</DockerComposeBuildOnly>
+  </PropertyGroup>
+  <ItemGroup Label="ComposeFiles">
+    <None Include="docker-compose.yml" />
+    <None Include="docker-compose.override.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="docker-compose.vs.debug.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include=".dockerignore" />
+  </ItemGroup>
+  <ItemGroup Label="ProjectReferences">
+    <ProjectReference Include="Backend\API\API.csproj" />
+  </ItemGroup>
+  <!-- Garante build local antes do Container Tools (evita "Could not copy API.dll") -->
+  <Target Name="BuildProjectReferences" BeforeTargets="Build;DockerComposeBuild;ComposeBuild;PrepareForRun">
+    <MSBuild
+      Projects="@(ProjectReference)"
+      Targets="Build"
+      Properties="Configuration=$(Configuration);Platform=$(Platform)" />
+  </Target>
+</Project>

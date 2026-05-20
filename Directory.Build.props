@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <!-- Evita Fast Mode copiar bin/Debug do host (incompatível com compose na raiz) -->
+    <DockerDevelopmentMode>Regular</DockerDevelopmentMode>
+    <ContainerDevelopmentMode>Regular</ContainerDevelopmentMode>
+  </PropertyGroup>
+</Project>

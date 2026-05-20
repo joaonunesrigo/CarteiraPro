@@ -1,0 +1,5 @@
+# Mesclado com docker-compose.yml (CLI e Visual Studio)
+services:
+  api:
+    labels:
+      com.microsoft.visualstudio.project: "Backend\\API\\API.csproj"

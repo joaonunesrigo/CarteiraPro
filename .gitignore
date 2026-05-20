@@ -1,1 +1,5 @@
 .env
+.vs/
+*.dcproj.user
+**/bin/
+**/obj/
