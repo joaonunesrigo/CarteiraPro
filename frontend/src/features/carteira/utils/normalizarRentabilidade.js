@@ -2,6 +2,7 @@ export function normalizarRentabilidade(item) {
   return {
     id: item.id ?? item.Id,
     ticker: item.ticker ?? item.Ticker,
+    tipo: Number(item.tipo ?? item.Tipo ?? 0),
     precoMedio: Number(item.precoMedio ?? item.PrecoMedio ?? 0),
     cotacaoAtual: Number(item.cotacaoAtual ?? item.CotacaoAtual ?? 0),
     quantidade: Number(item.quantidade ?? item.Quantidade ?? 0),

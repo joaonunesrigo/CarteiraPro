@@ -1,6 +1,7 @@
 import { EmptyState } from '../../../../components/EmptyState'
 import { Panel } from '../../../../components/Panel'
 import { GraficoAlocacao } from './GraficoAlocacao'
+import { GraficoAlocacaoPorTipo } from './GraficoAlocacaoPorTipo'
 import { GraficoRentabilidade } from './GraficoRentabilidade'
 import { GraficoValores } from './GraficoValores'
 
@@ -29,6 +30,26 @@ export function CarteiraGraficos({ dadosGraficos }) {
                   style={{ backgroundColor: item.cor }}
                 />
                 {item.ticker} ({item.percentual}%)
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Panel>
+
+      <Panel titulo="Alocação por tipo de ativo">
+        <div className="p-4">
+          <GraficoAlocacaoPorTipo dados={dadosGraficos.alocacaoPorTipo} />
+          <ul className="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2">
+            {dadosGraficos.alocacaoPorTipo.map((item) => (
+              <li
+                key={item.tipo}
+                className="flex items-center gap-2 text-xs text-slate-300"
+              >
+                <span
+                  className="h-2.5 w-2.5 rounded-full"
+                  style={{ backgroundColor: item.cor }}
+                />
+                {item.rotulo} ({item.percentual}%)
               </li>
             ))}
           </ul>

@@ -40,6 +40,7 @@ public class GetRentabilidadeAtivosService
             {
                 Id = ativo.Id,
                 Ticker = ativo.Ticker,
+                Tipo = ativo.Tipo,
                 PrecoMedio = ativo.PrecoMedio,
                 CotacaoAtual = cotacao,
                 Quantidade = ativo.Quantidade,
