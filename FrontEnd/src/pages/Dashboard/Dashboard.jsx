@@ -4,6 +4,7 @@ import { AtivoTable } from '../../features/carteira/components/AtivoTable'
 import { CarteiraGraficos } from '../../features/carteira/components/CarteiraGraficos'
 import { CarteiraSummary } from '../../features/carteira/components/CarteiraSummary'
 import { FormularioAtivo } from '../../features/carteira/components/FormularioAtivo'
+import { ImportadorB3 } from '../../features/carteira/components/ImportadorB3'
 
 export function Dashboard({
   abas,
@@ -15,12 +16,14 @@ export function Dashboard({
   carregando,
   erro,
   formularioAtivo,
+  importadorB3,
   excluirAtivo,
 }) {
   const paineis = {
     carteira: (
       <>
         <CarteiraSummary cartoes={cartoesResumo} />
+        <ImportadorB3 {...importadorB3} />
         <FormularioAtivo {...formularioAtivo} />
         <AtivoTable linhas={linhasAtivos} excluirAtivo={excluirAtivo} />
       </>

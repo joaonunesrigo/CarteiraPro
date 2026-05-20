@@ -1,15 +1,18 @@
+import { useConfirmDialogContext } from '../../components/ConfirmDialog'
 import { useTabs } from '../../components/Tabs'
 import { useToastContext } from '../../components/Toast'
 import {
   useAdicionarAtivo,
   useExcluirAtivo,
 } from '../../features/carteira/hooks/useAtivos'
+import { useImportarB3 } from '../../features/carteira/hooks/useImportarB3'
 import { useCarteira } from '../../features/carteira/hooks/useCarteira'
 import { ABA_INICIAL_DASHBOARD, ABAS_DASHBOARD } from './dashboardAbas.constants'
 import { Dashboard } from './Dashboard'
 
 export default function DashboardPage() {
   const { mostrarToast } = useToastContext()
+  const { solicitarConfirmacao } = useConfirmDialogContext()
   const { abaAtiva, mudarAba } = useTabs(ABA_INICIAL_DASHBOARD)
   const { cartoesResumo, linhasAtivos, dadosGraficos, carregando, erro, recarregar } =
     useCarteira()
@@ -20,7 +23,12 @@ export default function DashboardPage() {
     tickersCadastrados,
     mostrarToast,
   )
-  const { excluirAtivo } = useExcluirAtivo(recarregar, mostrarToast)
+  const { excluirAtivo } = useExcluirAtivo(
+    recarregar,
+    mostrarToast,
+    solicitarConfirmacao,
+  )
+  const importadorB3 = useImportarB3(recarregar, mostrarToast)
 
   return (
     <Dashboard
@@ -33,6 +41,7 @@ export default function DashboardPage() {
       carregando={carregando}
       erro={erro}
       formularioAtivo={formularioAtivo}
+      importadorB3={importadorB3}
       excluirAtivo={excluirAtivo}
     />
   )

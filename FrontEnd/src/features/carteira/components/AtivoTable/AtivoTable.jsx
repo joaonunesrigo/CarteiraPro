@@ -43,7 +43,7 @@ export function AtivoTable({ linhas, excluirAtivo }) {
                 <td className="px-4 py-3">
                   <Button
                     variante="danger"
-                    onClick={() => excluirAtivo(ativo.id)}
+                    onClick={() => excluirAtivo(ativo.id, ativo.ticker)}
                   >
                     Excluir
                   </Button>
