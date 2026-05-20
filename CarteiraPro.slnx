@@ -1,11 +1,9 @@
 <Solution>
-  <Folder Name="/Backend/">
-    <Project Path="Backend/API/API.csproj" />
-    <Project Path="Backend/Application/Application.csproj" />
-    <Project Path="Backend/Domain/Domain.csproj" />
-    <Project Path="Backend/Infrastructure/Infrastructure.csproj" />
+  <Project Path="docker-compose.dcproj" />
+  <Folder Name="/backend/">
+    <Project Path="backend/API/API.csproj" />
+    <Project Path="backend/Application/Application.csproj" />
+    <Project Path="backend/Domain/Domain.csproj" />
+    <Project Path="backend/Infrastructure/Infrastructure.csproj" />
   </Folder>
-  <Project Path="docker-compose.dcproj">
-    <Build />
-  </Project>
 </Solution>

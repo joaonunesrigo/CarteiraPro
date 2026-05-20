@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerComposeProjectPath>..\..\docker-compose.dcproj</DockerComposeProjectPath>
-    <!-- Contexto = Backend; Dockerfile nesta pasta (API/) -->
+    <!-- Contexto = backend; Dockerfile nesta pasta (API/) -->
     <DockerfileContext>..</DockerfileContext>
     <DockerfileFile>Dockerfile</DockerfileFile>
     <DockerDevelopmentMode>Regular</DockerDevelopmentMode>

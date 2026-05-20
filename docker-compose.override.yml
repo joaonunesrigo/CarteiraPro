@@ -2,4 +2,4 @@
 services:
   api:
     labels:
-      com.microsoft.visualstudio.project: "Backend\\API\\API.csproj"
+      com.microsoft.visualstudio.project: "backend\\API\\API.csproj"

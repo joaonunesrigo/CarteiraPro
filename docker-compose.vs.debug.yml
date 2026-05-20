@@ -6,4 +6,4 @@ services:
       com.microsoft.visualstudio.debuggee.arguments: "API.dll"
       com.microsoft.visualstudio.debuggee.workingdirectory: "/app"
       com.microsoft.visualstudio.launch-url.path-query: "/swagger"
-      com.microsoft.visualstudio.project: "Backend\\API\\API.csproj"
+      com.microsoft.visualstudio.project: "backend\\API\\API.csproj"

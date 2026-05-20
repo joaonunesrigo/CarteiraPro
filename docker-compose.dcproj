@@ -25,7 +25,7 @@
     <None Include=".dockerignore" />
   </ItemGroup>
   <ItemGroup Label="ProjectReferences">
-    <ProjectReference Include="Backend\API\API.csproj" />
+    <ProjectReference Include="backend\API\API.csproj" />
   </ItemGroup>
   <!-- Garante build local antes do Container Tools (evita "Could not copy API.dll") -->
   <Target Name="BuildProjectReferences" BeforeTargets="Build;DockerComposeBuild;ComposeBuild;PrepareForRun">

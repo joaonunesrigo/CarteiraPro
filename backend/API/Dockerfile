@@ -1,5 +1,5 @@
 # Padrão Visual Studio Container Tools (base/build/publish/final)
-# Contexto de build: pasta Backend (pai deste Dockerfile)
+# Contexto de build: pasta backend (pai deste Dockerfile)
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
