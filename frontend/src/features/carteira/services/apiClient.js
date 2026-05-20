@@ -27,5 +27,9 @@ export async function apiClient(caminho, opcoes = {}) {
   }
 
   if (resposta.status === 204) return null
-  return resposta.json()
+
+  const texto = await resposta.text()
+  if (!texto) return null
+
+  return JSON.parse(texto)
 }
