@@ -1,0 +1,1 @@
+export { PainelProventos } from './PainelProventos'

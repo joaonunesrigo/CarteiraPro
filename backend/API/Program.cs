@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Infrastructure.ExternalServices;
 using Infrastructure.Importacao;
 using Application.Services.Carteira;
+using Application.Services.Proventos;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Repositórios
 builder.Services.AddScoped<IAtivoRepository, AtivoRepository>();
+builder.Services.AddScoped<IProventoRepository, ProventoRepository>();
 
 // Use Cases
 builder.Services.AddScoped<AddAtivoService>();
@@ -40,8 +42,15 @@ builder.Services.AddScoped<GetCotacaoAtivoService>();
 builder.Services.AddScoped<PreviewImportacaoB3Service>();
 builder.Services.AddScoped<ImportarAtivosService>();
 builder.Services.AddScoped<IB3PosicaoParser, B3PosicaoParser>();
+builder.Services.AddScoped<IB3MovimentacaoParser, B3MovimentacaoParser>();
 builder.Services.AddScoped<GetRentabilidadeAtivosService>();
 builder.Services.AddScoped<GetResumoCarteiraService>();
+builder.Services.AddScoped<GetProventosService>();
+builder.Services.AddScoped<GetResumoProventosService>();
+builder.Services.AddScoped<AddProventoService>();
+builder.Services.AddScoped<RemoveProventoService>();
+builder.Services.AddScoped<PreviewImportacaoProventosB3Service>();
+builder.Services.AddScoped<ImportarProventosB3Service>();
 
 // External Services
 builder.Services.AddHttpClient<IBrapiService, BrapiService>();

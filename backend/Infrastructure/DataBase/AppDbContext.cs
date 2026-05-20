@@ -26,6 +26,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Provento>(entity =>
         {
             entity.HasKey(p => p.Id);
+            entity.Property(p => p.Ticker).IsRequired().HasMaxLength(10);
             entity.Property(p => p.ValorPorCota).HasPrecision(18, 6);
             entity.Property(p => p.Quantidade).HasPrecision(18, 8);
         });

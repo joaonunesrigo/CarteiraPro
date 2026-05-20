@@ -4,5 +4,7 @@ public enum TipoProvento
 {
     Dividendo,
     JurosSobreCapitalProprio,
-    Rendimento
+    Rendimento,
+    Reembolso,
+    RestituicaoDeCapital,
 }
