@@ -4,6 +4,7 @@ using Infrastructure.Repositories;
 using Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Infrastructure.ExternalServices;
+using Infrastructure.Importacao;
 using Application.Services.Carteira;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,9 @@ builder.Services.AddScoped<AddAtivoService>();
 builder.Services.AddScoped<GetAtivosService>();
 builder.Services.AddScoped<RemoveAtivoService>();
 builder.Services.AddScoped<GetCotacaoAtivoService>();
+builder.Services.AddScoped<PreviewImportacaoB3Service>();
+builder.Services.AddScoped<ImportarAtivosService>();
+builder.Services.AddScoped<IB3PosicaoParser, B3PosicaoParser>();
 builder.Services.AddScoped<GetRentabilidadeAtivosService>();
 builder.Services.AddScoped<GetResumoCarteiraService>();
 

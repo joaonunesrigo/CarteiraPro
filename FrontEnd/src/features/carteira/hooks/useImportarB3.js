@@ -1,0 +1,169 @@
+import { useState } from 'react'
+import { carteiraApi } from '../services/carteira.api'
+
+function criarLinhaPreview(dados, indice) {
+  return {
+    id: `${dados.ticker}-${indice}`,
+    ticker: dados.ticker,
+    quantidade: dados.quantidade,
+    precoFechamento: dados.precoFechamento ?? null,
+    precoMedio:
+      dados.precoMedio != null ? String(dados.precoMedio) : '',
+    tipo: dados.tipo,
+    jaCadastrado: dados.jaCadastrado,
+    origemAba: dados.origemAba,
+    selecionado: !dados.jaCadastrado,
+  }
+}
+
+export function useImportarB3(recarregar, mostrarToast) {
+  const [linhas, setLinhas] = useState([])
+  const [processandoArquivo, setProcessandoArquivo] = useState(false)
+  const [importando, setImportando] = useState(false)
+  const [erroArquivo, setErroArquivo] = useState(null)
+  const [nomeArquivo, setNomeArquivo] = useState(null)
+
+  async function aoSelecionarArquivo(evento) {
+    const arquivo = evento.target.files?.[0]
+    evento.target.value = ''
+
+    if (!arquivo) return
+
+    setErroArquivo(null)
+    setProcessandoArquivo(true)
+    setNomeArquivo(arquivo.name)
+
+    try {
+      const resposta = await carteiraApi.previewImportacaoB3(arquivo)
+      const preview = (resposta.linhas ?? []).map((dados, indice) =>
+        criarLinhaPreview(dados, indice),
+      )
+      setLinhas(preview)
+
+      if (preview.length === 0) {
+        setErroArquivo('Nenhum ativo encontrado no arquivo.')
+      }
+    } catch (err) {
+      setLinhas([])
+      setErroArquivo(err.message || 'Erro ao ler o arquivo.')
+    } finally {
+      setProcessandoArquivo(false)
+    }
+  }
+
+  function atualizarLinha(id, campo, valor) {
+    setLinhas((atual) =>
+      atual.map((linha) =>
+        linha.id === id ? { ...linha, [campo]: valor } : linha,
+      ),
+    )
+  }
+
+  function alternarSelecionado(id) {
+    setLinhas((atual) =>
+      atual.map((linha) =>
+        linha.id === id && !linha.jaCadastrado
+          ? { ...linha, selecionado: !linha.selecionado }
+          : linha,
+      ),
+    )
+  }
+
+  function aplicarPrecoFechamentoComoPm() {
+    setLinhas((atual) =>
+      atual.map((linha) => {
+        if (!linha.precoFechamento) return linha
+        return {
+          ...linha,
+          precoMedio: String(linha.precoFechamento),
+        }
+      }),
+    )
+  }
+
+  function limparPreview() {
+    setLinhas([])
+    setErroArquivo(null)
+    setNomeArquivo(null)
+  }
+
+  async function confirmarImportacao() {
+    const selecionadas = linhas.filter((l) => l.selecionado && !l.jaCadastrado)
+
+    const invalidas = selecionadas.filter((l) => {
+      const pm = Number(l.precoMedio)
+      return !l.ticker || l.quantidade <= 0 || Number.isNaN(pm) || pm < 0
+    })
+
+    if (selecionadas.length === 0) {
+      mostrarToast?.('Selecione ao menos um ativo para importar.', 'erro')
+      return
+    }
+
+    if (invalidas.length > 0) {
+      mostrarToast?.(
+        'Preencha o preço médio de todos os ativos selecionados.',
+        'erro',
+      )
+      return
+    }
+
+    setImportando(true)
+
+    try {
+      const resultado = await carteiraApi.importarAtivos({
+        ignorarDuplicados: true,
+        ativos: selecionadas.map((l) => ({
+          ticker: l.ticker,
+          precoMedio: Number(l.precoMedio),
+          quantidade: l.quantidade,
+          tipo: l.tipo,
+        })),
+      })
+
+      const { importados, ignorados, erros } = resultado
+      const partes = []
+
+      if (importados > 0) partes.push(`${importados} importado(s)`)
+      if (ignorados > 0) partes.push(`${ignorados} ignorado(s)`)
+      if (erros?.length > 0) partes.push(`${erros.length} erro(s)`)
+
+      const tipo =
+        erros?.length > 0 && importados === 0 ? 'erro' : 'sucesso'
+
+      mostrarToast?.(partes.join(', ') || 'Importação concluída.', tipo)
+
+      if (erros?.length > 0) {
+        console.warn('Erros na importação B3:', erros)
+      }
+
+      if (importados > 0) {
+        limparPreview()
+        recarregar()
+      }
+    } catch (err) {
+      mostrarToast?.(err.message || 'Erro ao importar ativos.', 'erro')
+    } finally {
+      setImportando(false)
+    }
+  }
+
+  const totalSelecionadas = linhas.filter(
+    (l) => l.selecionado && !l.jaCadastrado,
+  ).length
+
+  return {
+    linhas,
+    processandoArquivo,
+    importando,
+    erroArquivo,
+    nomeArquivo,
+    totalSelecionadas,
+    aoSelecionarArquivo,
+    atualizarLinha,
+    alternarSelecionado,
+    aplicarPrecoFechamentoComoPm,
+    limparPreview,
+    confirmarImportacao,
+  }
+}

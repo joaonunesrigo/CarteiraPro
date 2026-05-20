@@ -102,12 +102,23 @@ export function useAdicionarAtivo(
   }
 }
 
-export function useExcluirAtivo(aoConcluir, mostrarToast) {
-  async function excluirAtivo(id) {
-    if (!id || !confirm('Remover este ativo?')) return
+export function useExcluirAtivo(aoConcluir, mostrarToast, solicitarConfirmacao) {
+  async function excluirAtivo(id, ticker) {
+    if (!id) return
+
+    const confirmou = await solicitarConfirmacao({
+      titulo: 'Remover ativo',
+      mensagem: `Deseja remover ${ticker} da carteira? Esta ação não pode ser desfeita.`,
+      textoConfirmar: 'Remover',
+      textoCancelar: 'Cancelar',
+      variante: 'perigo',
+    })
+
+    if (!confirmou) return
+
     try {
       await carteiraApi.removerAtivo(id)
-      mostrarToast?.('Ativo removido da carteira.', 'sucesso')
+      mostrarToast?.(`${ticker} foi removido da carteira.`, 'sucesso')
       aoConcluir()
     } catch (err) {
       mostrarToast?.(err.message || 'Erro ao remover ativo', 'erro')
