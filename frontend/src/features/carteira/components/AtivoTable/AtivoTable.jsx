@@ -1,69 +1,86 @@
 import { Button } from '../../../../components/Button'
-import { EmptyState } from '../../../../components/EmptyState'
-import { Panel } from '../../../../components/Panel'
-import { SignedValue } from '../../../../components/SignedValue'
+import { DataTable } from '../../../../components/DataTable'
 
 export function AtivoTable({ linhas, excluirAtivo, excluirTodosAtivos }) {
-  if (!linhas.length) {
-    return <EmptyState>Nenhum ativo na carteira.</EmptyState>
-  }
+  const colunas = [
+    {
+      chave: 'ticker',
+      titulo: 'Ticker',
+      classeCelula: 'font-medium',
+      render: (ativo) => ativo.ticker,
+    },
+    {
+      chave: 'quantidade',
+      titulo: 'Qtd',
+      classeCelula: 'tabular-nums',
+      render: (ativo) => ativo.quantidade,
+    },
+    {
+      chave: 'precoMedio',
+      titulo: 'Preço médio',
+      classeCelula: 'tabular-nums',
+      render: (ativo) => ativo.precoMedioFormatado,
+    },
+    {
+      chave: 'cotacao',
+      titulo: 'Cotação',
+      classeCelula: 'tabular-nums',
+      render: (ativo) => ativo.cotacaoFormatada,
+    },
+    {
+      chave: 'rentabilidadePercent',
+      titulo: 'Rent. %',
+      classeCelula: (ativo) =>
+        `tabular-nums ${
+          ativo.rentabilidadePercentPositiva
+            ? 'text-emerald-400'
+            : 'text-red-400'
+        }`,
+      render: (ativo) => ativo.rentabilidadePercentFormatada,
+    },
+    {
+      chave: 'rentabilidadeReais',
+      titulo: 'Rent. R$',
+      classeCelula: (ativo) =>
+        `tabular-nums ${
+          ativo.rentabilidadeReaisPositiva
+            ? 'text-emerald-400'
+            : 'text-red-400'
+        }`,
+      render: (ativo) => ativo.rentabilidadeReaisFormatada,
+    },
+    {
+      chave: 'acoes',
+      titulo: '',
+      render: (ativo) => (
+        <Button
+          variante="danger"
+          onClick={() => excluirAtivo(ativo.id, ativo.ticker)}
+        >
+          Excluir
+        </Button>
+      ),
+    },
+  ]
 
   return (
-    <Panel
+    <DataTable
       titulo="Ativos"
       acao={
-        <Button
-          variante="perigo"
-          type="button"
-          onClick={() => excluirTodosAtivos(linhas.length)}
-        >
-          Excluir todos
-        </Button>
+        linhas.length > 0 && (
+          <Button
+            variante="perigo"
+            type="button"
+            onClick={() => excluirTodosAtivos(linhas.length)}
+          >
+            Excluir todos
+          </Button>
+        )
       }
-    >
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="bg-slate-900 text-slate-400">
-            <tr>
-              <th className="px-4 py-3 font-medium">Ticker</th>
-              <th className="px-4 py-3 font-medium">Qtd</th>
-              <th className="px-4 py-3 font-medium">Preço médio</th>
-              <th className="px-4 py-3 font-medium">Cotação</th>
-              <th className="px-4 py-3 font-medium">Rent. %</th>
-              <th className="px-4 py-3 font-medium">Rent. R$</th>
-              <th className="px-4 py-3 font-medium" />
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-800 bg-slate-900/30">
-            {linhas.map((ativo) => (
-              <tr key={ativo.ticker} className="text-slate-200">
-                <td className="px-4 py-3 font-medium">{ativo.ticker}</td>
-                <td className="px-4 py-3 tabular-nums">{ativo.quantidade}</td>
-                <td className="px-4 py-3 tabular-nums">
-                  {ativo.precoMedioFormatado}
-                </td>
-                <td className="px-4 py-3 tabular-nums">
-                  {ativo.cotacaoFormatada}
-                </td>
-                <SignedValue positivo={ativo.rentabilidadePercentPositiva}>
-                  {ativo.rentabilidadePercentFormatada}
-                </SignedValue>
-                <SignedValue positivo={ativo.rentabilidadeReaisPositiva}>
-                  {ativo.rentabilidadeReaisFormatada}
-                </SignedValue>
-                <td className="px-4 py-3">
-                  <Button
-                    variante="danger"
-                    onClick={() => excluirAtivo(ativo.id, ativo.ticker)}
-                  >
-                    Excluir
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </Panel>
+      colunas={colunas}
+      itens={linhas}
+      obterChaveLinha={(ativo) => ativo.id ?? ativo.ticker}
+      estadoVazio="Nenhum ativo na carteira."
+    />
   )
 }
