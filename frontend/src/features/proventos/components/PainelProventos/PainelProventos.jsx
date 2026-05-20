@@ -2,7 +2,9 @@ import { Alert } from '../../../../components/Alert'
 import { Button } from '../../../../components/Button'
 import { Card } from '../../../../components/Card'
 import { DataTable } from '../../../../components/DataTable'
+import { Panel } from '../../../../components/Panel'
 import { TIPOS_PROVENTO } from '../../constants/tiposProvento'
+import { GraficoProventosPorMes } from '../GraficoProventosPorMes'
 
 const moeda = new Intl.NumberFormat('pt-BR', {
   style: 'currency',
@@ -318,6 +320,18 @@ export function PainelProventos({
           </p>
         </Card>
       </div>
+
+      <Panel titulo="Proventos por mês">
+        <div className="p-4">
+          {resumo?.porMes?.length ? (
+            <GraficoProventosPorMes dados={resumo.porMes} />
+          ) : (
+            <p className="py-8 text-center text-sm text-slate-400">
+              Importe proventos para visualizar o gráfico mensal.
+            </p>
+          )}
+        </div>
+      </Panel>
 
       <DataTable
         titulo="Proventos importados"
