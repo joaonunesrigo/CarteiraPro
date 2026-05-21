@@ -1,5 +1,37 @@
+# Environment
 .env
-.vs/
-*.dcproj.user
+.env.local
+.env.*.local
+
+# .NET
 **/bin/
 **/obj/
+**/[Dd]ebug/
+**/[Rr]elease/
+*.user
+*.suo
+*.rsuser
+*.dcproj.user
+
+# Frontend
+**/node_modules/
+**/dist/
+**/dist-ssr/
+*.local
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# IDE / OS
+.vs/
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs / temp
+*.log
+*.tmp
+*.cache

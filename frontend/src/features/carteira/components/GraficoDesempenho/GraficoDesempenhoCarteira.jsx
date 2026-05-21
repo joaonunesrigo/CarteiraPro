@@ -133,6 +133,11 @@ export function GraficoDesempenhoCarteira({
               </span>
             </div>
 
+            <p className="text-xs leading-relaxed text-slate-500">
+              O desempenho histórico considera as operações registradas no sistema. Ativos importados como posição inicial passam a contar a
+              partir da data de importação.
+            </p>
+
             {tickersSemHistorico.length > 0 && (
               <p className="text-xs text-amber-400/90">
                 Sem cotação histórica para: {tickersSemHistorico.join(', ')}. Esses ativos entram pelo preço médio nesse período.

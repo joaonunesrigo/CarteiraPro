@@ -80,9 +80,11 @@ public class GetEvolucaoPatrimonialService
 
                 valorInvestido += quantidade * custoMedio;
 
-                var cotacao = ObterCotacaoNoMes(historicos, ativo.Ticker, refMes.Year, refMes.Month);
-                if (cotacao is null && refMes >= inicioMesAtual && cotacoesAtuais.TryGetValue(ativo.Ticker, out var quoteAtual))
+                decimal? cotacao = null;
+                var ehMesCorrente = refMes >= inicioMesAtual;
+                if (ehMesCorrente && cotacoesAtuais.TryGetValue(ativo.Ticker, out var quoteAtual))
                     cotacao = quoteAtual.Cotacao;
+                cotacao ??= ObterCotacaoNoMes(historicos, ativo.Ticker, refMes.Year, refMes.Month);
                 cotacao ??= custoMedio;
 
                 patrimonio += quantidade * cotacao.Value;
