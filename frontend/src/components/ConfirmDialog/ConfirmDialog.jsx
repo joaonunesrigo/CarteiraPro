@@ -1,21 +1,10 @@
-import { Button } from "../Button";
+import { Button } from '../Button'
 
-export function ConfirmDialog({
-  titulo,
-  mensagem,
-  textoConfirmar,
-  textoCancelar,
-  variante,
-  onConfirmar,
-  onCancelar,
-}) {
-  const varianteConfirmar = variante === "perigo" ? "perigo" : "primary";
+export function ConfirmDialog({ titulo, mensagem, textoConfirmar, textoCancelar, variante, onConfirmar, onCancelar }) {
+  const varianteConfirmar = variante === 'perigo' ? 'perigo' : 'primary'
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      role="presentation"
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="presentation">
       <button
         type="button"
         className="absolute inset-0 animate-modal-overlay-in bg-slate-950/70 backdrop-blur-sm"
@@ -33,10 +22,7 @@ export function ConfirmDialog({
         <h2 id="dialogo-titulo" className="text-lg font-semibold text-white">
           {titulo}
         </h2>
-        <p
-          id="dialogo-mensagem"
-          className="mt-2 text-sm leading-relaxed text-slate-300"
-        >
+        <p id="dialogo-mensagem" className="mt-2 text-sm leading-relaxed text-slate-300">
           {mensagem}
         </p>
 
@@ -44,15 +30,11 @@ export function ConfirmDialog({
           <Button variante="secondary" type="button" onClick={onCancelar}>
             {textoCancelar}
           </Button>
-          <Button
-            variante={varianteConfirmar}
-            type="button"
-            onClick={onConfirmar}
-          >
+          <Button variante={varianteConfirmar} type="button" onClick={onConfirmar}>
             {textoConfirmar}
           </Button>
         </div>
       </div>
     </div>
-  );
+  )
 }

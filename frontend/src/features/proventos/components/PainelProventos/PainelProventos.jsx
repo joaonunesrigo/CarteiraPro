@@ -22,9 +22,7 @@ function formatarData(data) {
 
 function obterDataUtc(data) {
   const valor = new Date(data)
-  return new Date(
-    Date.UTC(valor.getUTCFullYear(), valor.getUTCMonth(), valor.getUTCDate()),
-  )
+  return new Date(Date.UTC(valor.getUTCFullYear(), valor.getUTCMonth(), valor.getUTCDate()))
 }
 
 function formatarMesAno(data) {
@@ -36,9 +34,7 @@ function formatarMesAno(data) {
 }
 
 function somarProventos(proventos, filtro) {
-  return proventos
-    .filter(filtro)
-    .reduce((total, provento) => total + Number(provento.valorTotal ?? 0), 0)
+  return proventos.filter(filtro).reduce((total, provento) => total + Number(provento.valorTotal ?? 0), 0)
 }
 
 function calcularIndicadores(proventos) {
@@ -54,16 +50,8 @@ function calcularIndicadores(proventos) {
   const primeiraData = new Date(Math.min(...datas))
   const ultimaData = new Date(Math.max(...datas))
   const hoje = new Date()
-  const inicioMesAtual = new Date(
-    Date.UTC(hoje.getUTCFullYear(), hoje.getUTCMonth(), 1),
-  )
-  const inicioUltimos12Meses = new Date(
-    Date.UTC(
-      hoje.getUTCFullYear() - 1,
-      hoje.getUTCMonth(),
-      hoje.getUTCDate(),
-    ),
-  )
+  const inicioMesAtual = new Date(Date.UTC(hoje.getUTCFullYear(), hoje.getUTCMonth(), 1))
+  const inicioUltimos12Meses = new Date(Date.UTC(hoje.getUTCFullYear() - 1, hoje.getUTCMonth(), hoje.getUTCDate()))
 
   return {
     periodo: `${formatarMesAno(primeiraData)} - ${formatarMesAno(ultimaData)}`,
@@ -78,13 +66,7 @@ function calcularIndicadores(proventos) {
   }
 }
 
-export function PainelProventos({
-  proventos,
-  resumo,
-  carregando,
-  erro,
-  importador,
-}) {
+export function PainelProventos({ proventos, resumo, carregando, erro, importador }) {
   const indicadores = calcularIndicadores(proventos)
 
   const colunasProventos = [
@@ -101,11 +83,7 @@ export function PainelProventos({
       render: (provento) => (
         <>
           {provento.ticker}
-          {!provento.ativoId && (
-            <span className="ml-2 text-xs font-normal text-slate-500">
-              histórico
-            </span>
-          )}
+          {!provento.ativoId && <span className="ml-2 text-xs font-normal text-slate-500">histórico</span>}
         </>
       ),
     },
@@ -150,19 +128,15 @@ export function PainelProventos({
           >
             investidor.b3.com.br
           </a>
-          , baixe o relatório{' '}
-          <strong className="text-slate-300">Proventos Recebidos</strong> ou{' '}
-          <strong className="text-slate-300">Movimentação</strong> em Excel
-          (.xlsx). São importados apenas Dividendos, JCP e Rendimentos dos
+          , baixe o relatório <strong className="text-slate-300">Proventos Recebidos</strong> ou{' '}
+          <strong className="text-slate-300">Movimentação</strong> em Excel (.xlsx). São importados apenas Dividendos, JCP e Rendimentos dos
           tickers que já existem na sua carteira.
         </p>
 
         <div className="flex flex-wrap items-center gap-3">
           <label className="cursor-pointer">
             <span className="inline-block rounded-lg border border-slate-600 bg-slate-800 px-4 py-2 text-sm font-medium text-slate-200 transition hover:bg-slate-700">
-              {importador.processandoArquivo
-                ? 'Lendo arquivo...'
-                : 'Escolher .xlsx da B3'}
+              {importador.processandoArquivo ? 'Lendo arquivo...' : 'Escolher .xlsx da B3'}
             </span>
             <input
               type="file"
@@ -173,18 +147,10 @@ export function PainelProventos({
             />
           </label>
 
-          {importador.nomeArquivo && (
-            <span className="text-sm text-slate-500">
-              {importador.nomeArquivo}
-            </span>
-          )}
+          {importador.nomeArquivo && <span className="text-sm text-slate-500">{importador.nomeArquivo}</span>}
 
           {importador.linhas.length > 0 && (
-            <Button
-              variante="secondary"
-              type="button"
-              onClick={importador.limparPreview}
-            >
+            <Button variante="secondary" type="button" onClick={importador.limparPreview}>
               Limpar
             </Button>
           )}
@@ -199,23 +165,14 @@ export function PainelProventos({
         {importador.linhas.length > 0 && (
           <div className="mt-6">
             {(() => {
-              const foraDaCarteira = importador.linhas.filter(
-                (linha) => !linha.ativoCadastrado,
-              )
+              const foraDaCarteira = importador.linhas.filter((linha) => !linha.ativoCadastrado)
               if (foraDaCarteira.length === 0) return null
-              const tickers = [
-                ...new Set(foraDaCarteira.map((linha) => linha.ticker)),
-              ]
-              const somaFora = foraDaCarteira.reduce(
-                (total, linha) => total + Number(linha.valorTotal ?? 0),
-                0,
-              )
+              const tickers = [...new Set(foraDaCarteira.map((linha) => linha.ticker))]
+              const somaFora = foraDaCarteira.reduce((total, linha) => total + Number(linha.valorTotal ?? 0), 0)
               return (
                 <p className="mb-4 rounded-md border border-violet-500/30 bg-violet-500/10 px-3 py-2 text-xs text-violet-200">
-                  {foraDaCarteira.length} lançamento(s) totalizando{' '}
-                  {moeda.format(somaFora)} pertencem a ativos que não estão na
-                  carteira atual ({tickers.join(', ')}). Eles serão importados
-                  como histórico, sem voltar para a carteira.
+                  {foraDaCarteira.length} lançamento(s) totalizando {moeda.format(somaFora)} pertencem a ativos que não estão na carteira
+                  atual ({tickers.join(', ')}). Eles serão importados como histórico, sem voltar para a carteira.
                 </p>
               )
             })()}
@@ -246,30 +203,14 @@ export function PainelProventos({
                           className="rounded border-slate-600"
                         />
                       </td>
-                      <td className="px-3 py-2 text-slate-300">
-                        {formatarData(linha.dataPagamento)}
-                      </td>
-                      <td className="px-3 py-2 font-medium text-white">
-                        {linha.ticker}
-                      </td>
-                      <td className="px-3 py-2 text-slate-300">
-                        {TIPOS_PROVENTO[linha.tipo] ?? 'Provento'}
-                      </td>
-                      <td className="px-3 py-2 text-slate-300">
-                        {numero.format(linha.quantidade)}
-                      </td>
-                      <td className="px-3 py-2 text-slate-300">
-                        {moeda.format(linha.valorPorCota)}
-                      </td>
-                      <td className="px-3 py-2 font-medium text-emerald-300">
-                        {moeda.format(linha.valorTotal)}
-                      </td>
+                      <td className="px-3 py-2 text-slate-300">{formatarData(linha.dataPagamento)}</td>
+                      <td className="px-3 py-2 font-medium text-white">{linha.ticker}</td>
+                      <td className="px-3 py-2 text-slate-300">{TIPOS_PROVENTO[linha.tipo] ?? 'Provento'}</td>
+                      <td className="px-3 py-2 text-slate-300">{numero.format(linha.quantidade)}</td>
+                      <td className="px-3 py-2 text-slate-300">{moeda.format(linha.valorPorCota)}</td>
+                      <td className="px-3 py-2 font-medium text-emerald-300">{moeda.format(linha.valorTotal)}</td>
                       <td className="px-3 py-2 text-xs text-slate-500">
-                        {linha.jaImportado
-                            ? 'já importado'
-                            : linha.ativoCadastrado
-                              ? 'pronto'
-                              : 'histórico'}
+                        {linha.jaImportado ? 'já importado' : linha.ativoCadastrado ? 'pronto' : 'histórico'}
                       </td>
                     </tr>
                   ))}
@@ -280,14 +221,10 @@ export function PainelProventos({
             <div className="mt-4 flex justify-end">
               <Button
                 type="button"
-                disabled={
-                  importador.importando || importador.totalSelecionadas === 0
-                }
+                disabled={importador.importando || importador.totalSelecionadas === 0}
                 onClick={importador.confirmarImportacao}
               >
-                {importador.importando
-                  ? 'Importando...'
-                  : `Importar ${importador.totalSelecionadas} provento(s)`}
+                {importador.importando ? 'Importando...' : `Importar ${importador.totalSelecionadas} provento(s)`}
               </Button>
             </div>
           </div>
@@ -296,28 +233,16 @@ export function PainelProventos({
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card titulo="Total recebido (todo o período)">
-          <p className="text-2xl font-semibold text-emerald-300">
-            {moeda.format(resumo?.totalRecebido ?? 0)}
-          </p>
-          <p className="mt-1 text-xs text-slate-500">
-            Período: {indicadores.periodo}
-          </p>
+          <p className="text-2xl font-semibold text-emerald-300">{moeda.format(resumo?.totalRecebido ?? 0)}</p>
+          <p className="mt-1 text-xs text-slate-500">Período: {indicadores.periodo}</p>
         </Card>
         <Card titulo="Recebido no mês atual">
-          <p className="text-2xl font-semibold text-emerald-300">
-            {moeda.format(indicadores.totalMesAtual)}
-          </p>
-          <p className="mt-1 text-xs text-slate-500">
-            Proventos pagos desde o dia 1
-          </p>
+          <p className="text-2xl font-semibold text-emerald-300">{moeda.format(indicadores.totalMesAtual)}</p>
+          <p className="mt-1 text-xs text-slate-500">Proventos pagos desde o dia 1</p>
         </Card>
         <Card titulo="Recebido nos últimos 12 meses">
-          <p className="text-2xl font-semibold text-emerald-300">
-            {moeda.format(indicadores.totalUltimos12Meses)}
-          </p>
-          <p className="mt-1 text-xs text-slate-500">
-            Janela mensal móvel
-          </p>
+          <p className="text-2xl font-semibold text-emerald-300">{moeda.format(indicadores.totalUltimos12Meses)}</p>
+          <p className="mt-1 text-xs text-slate-500">Janela mensal móvel</p>
         </Card>
       </div>
 
@@ -326,9 +251,7 @@ export function PainelProventos({
           {resumo?.porMes?.length ? (
             <GraficoProventosPorMes dados={resumo.porMes} />
           ) : (
-            <p className="py-8 text-center text-sm text-slate-400">
-              Importe proventos para visualizar o gráfico mensal.
-            </p>
+            <p className="py-8 text-center text-sm text-slate-400">Importe proventos para visualizar o gráfico mensal.</p>
           )}
         </div>
       </Panel>

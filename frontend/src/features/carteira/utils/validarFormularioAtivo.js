@@ -1,7 +1,4 @@
-import {
-  normalizarTicker,
-  validarTickerDuplicado,
-} from './validarTicker'
+import { normalizarTicker, validarTickerDuplicado } from './validarTicker'
 
 export function validarFormularioAtivo(formulario, tickersCadastrados = []) {
   const erros = {}

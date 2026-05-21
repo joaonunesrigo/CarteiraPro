@@ -20,13 +20,7 @@ export function Select({ rotulo, erro, id, className, children, ...props }) {
         <label htmlFor={campoId} className={rotuloCampo}>
           {rotulo}
         </label>
-        <SelectBase
-          id={campoId}
-          erro={erro}
-          className={className}
-          aria-describedby={erro ? erroId : undefined}
-          {...props}
-        >
+        <SelectBase id={campoId} erro={erro} className={className} aria-describedby={erro ? erroId : undefined} {...props}>
           {children}
         </SelectBase>
       </div>

@@ -1,57 +1,29 @@
-import { useState } from 'react'
-import { carteiraApi } from '../services/carteira.api'
+import { useAdicionarOperacaoMutation, useRemoverOperacaoMutation } from '../mutations/carteiraMutations'
+import { useOperacoesAtivoQuery } from '../queries/carteiraQueries'
+import { useCarteiraStore } from '../stores/carteiraStore'
 
-function dataHoje() {
-  return new Date().toISOString().slice(0, 10)
-}
+export function useOperacoesAtivo(mostrarToast, solicitarConfirmacao) {
+  const ativoSelecionado = useCarteiraStore((state) => state.ativoOperacoesSelecionado)
+  const formulario = useCarteiraStore((state) => state.formularioOperacao)
+  const abrirOperacoesAtivo = useCarteiraStore((state) => state.abrirOperacoesAtivo)
+  const fecharOperacoesAtivo = useCarteiraStore((state) => state.fecharOperacoesAtivo)
+  const setCampoFormularioOperacao = useCarteiraStore((state) => state.setCampoFormularioOperacao)
+  const resetFormularioOperacao = useCarteiraStore((state) => state.resetFormularioOperacao)
+  const operacoesQuery = useOperacoesAtivoQuery(ativoSelecionado?.id)
+  const adicionarOperacaoMutation = useAdicionarOperacaoMutation(ativoSelecionado?.id)
+  const removerOperacaoMutation = useRemoverOperacaoMutation(ativoSelecionado?.id)
 
-const formularioInicial = {
-  tipo: 0,
-  data: dataHoje(),
-  quantidade: '',
-  precoUnitario: '',
-  taxas: '',
-  observacao: '',
-}
-
-export function useOperacoesAtivo(
-  aoAtualizarCarteira,
-  mostrarToast,
-  solicitarConfirmacao,
-) {
-  const [ativoSelecionado, setAtivoSelecionado] = useState(null)
-  const [operacoes, setOperacoes] = useState([])
-  const [formulario, setFormulario] = useState(formularioInicial)
-  const [carregando, setCarregando] = useState(false)
-  const [salvando, setSalvando] = useState(false)
-
-  async function carregarOperacoes(ativo) {
-    setCarregando(true)
-    try {
-      const dados = await carteiraApi.listarOperacoes(ativo.id)
-      setOperacoes(dados ?? [])
-    } catch (err) {
-      mostrarToast?.(err.message || 'Erro ao carregar operações', 'erro')
-    } finally {
-      setCarregando(false)
-    }
-  }
-
-  async function abrirPainel(ativo) {
-    setAtivoSelecionado(ativo)
-    setFormulario(formularioInicial)
-    await carregarOperacoes(ativo)
+  function abrirPainel(ativo) {
+    abrirOperacoesAtivo(ativo)
   }
 
   function fecharPainel() {
-    setAtivoSelecionado(null)
-    setOperacoes([])
-    setFormulario(formularioInicial)
+    fecharOperacoesAtivo()
   }
 
   function atualizarCampo(campo) {
     return (evento) => {
-      setFormulario((atual) => ({ ...atual, [campo]: evento.target.value }))
+      setCampoFormularioOperacao(campo, evento.target.value)
     }
   }
 
@@ -59,9 +31,8 @@ export function useOperacoesAtivo(
     evento.preventDefault()
     if (!ativoSelecionado) return
 
-    setSalvando(true)
     try {
-      await carteiraApi.adicionarOperacao(ativoSelecionado.id, {
+      await adicionarOperacaoMutation.mutateAsync({
         tipo: Number(formulario.tipo),
         data: formulario.data,
         quantidade: Number(formulario.quantidade),
@@ -70,22 +41,17 @@ export function useOperacoesAtivo(
         observacao: formulario.observacao || null,
       })
 
-      setFormulario(formularioInicial)
-      await carregarOperacoes(ativoSelecionado)
-      await aoAtualizarCarteira?.()
+      resetFormularioOperacao()
       mostrarToast?.('Operação registrada.', 'sucesso')
     } catch (err) {
       mostrarToast?.(err.message || 'Erro ao registrar operação', 'erro')
-    } finally {
-      setSalvando(false)
     }
   }
 
   async function removerOperacao(operacao) {
     const confirmou = await solicitarConfirmacao?.({
       titulo: 'Remover operação',
-      mensagem:
-        'Deseja remover esta operação? A posição do ativo será recalculada.',
+      mensagem: 'Deseja remover esta operação? A posição do ativo será recalculada.',
       textoConfirmar: 'Remover',
       textoCancelar: 'Cancelar',
       variante: 'perigo',
@@ -94,11 +60,7 @@ export function useOperacoesAtivo(
     if (!confirmou) return
 
     try {
-      await carteiraApi.removerOperacao(operacao.id)
-      if (ativoSelecionado) {
-        await carregarOperacoes(ativoSelecionado)
-      }
-      await aoAtualizarCarteira?.()
+      await removerOperacaoMutation.mutateAsync(operacao.id)
       mostrarToast?.('Operação removida.', 'sucesso')
     } catch (err) {
       mostrarToast?.(err.message || 'Erro ao remover operação', 'erro')
@@ -107,10 +69,10 @@ export function useOperacoesAtivo(
 
   return {
     ativoSelecionado,
-    operacoes,
+    operacoes: operacoesQuery.data ?? [],
     formulario,
-    carregando,
-    salvando,
+    carregando: operacoesQuery.isLoading,
+    salvando: adicionarOperacaoMutation.isPending,
     abrirPainel,
     fecharPainel,
     atualizarCampo,

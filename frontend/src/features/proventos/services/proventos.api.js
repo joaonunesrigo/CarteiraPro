@@ -4,8 +4,7 @@ import { apiUpload } from '../../carteira/services/apiUpload'
 export const proventosApi = {
   listar: () => apiClient('/proventos'),
   obterResumo: () => apiClient('/proventos/resumo'),
-  previewImportacaoB3: (arquivo) =>
-    apiUpload('/proventos/importar/preview', arquivo),
+  previewImportacaoB3: (arquivo) => apiUpload('/proventos/importar/preview', arquivo),
   importar: (dados) =>
     apiClient('/proventos/importar', {
       method: 'POST',

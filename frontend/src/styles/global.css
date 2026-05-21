@@ -1,5 +1,15 @@
 @import 'tailwindcss';
 
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+input[type='date']::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
+}
+
 @theme {
   --animate-toast-in: toast-in 0.4s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
   --animate-toast-out: toast-out 0.28s ease-in forwards;

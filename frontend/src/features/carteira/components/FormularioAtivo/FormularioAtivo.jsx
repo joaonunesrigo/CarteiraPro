@@ -4,20 +4,10 @@ import { Input } from '../../../../components/Input'
 import { Select } from '../../../../components/Select'
 import { TIPOS_ATIVO } from '../../constants/tiposAtivo'
 
-export function FormularioAtivo({
-  formulario,
-  errosCampos,
-  atualizarCampo,
-  enviando,
-  enviarFormulario,
-}) {
+export function FormularioAtivo({ formulario, errosCampos, atualizarCampo, enviando, enviarFormulario }) {
   return (
     <Card titulo="Adicionar ativo">
-      <form
-        noValidate
-        onSubmit={enviarFormulario}
-        className="grid gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-5"
-      >
+      <form noValidate onSubmit={enviarFormulario} className="grid gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-5">
         <Input
           rotulo="Ticker"
           id="ticker"
@@ -51,13 +41,7 @@ export function FormularioAtivo({
           onChange={atualizarCampo('quantidade')}
         />
 
-        <Select
-          rotulo="Tipo"
-          id="tipo"
-          erro={errosCampos.tipo}
-          value={formulario.tipo}
-          onChange={atualizarCampo('tipo')}
-        >
+        <Select rotulo="Tipo" id="tipo" erro={errosCampos.tipo} value={formulario.tipo} onChange={atualizarCampo('tipo')}>
           {TIPOS_ATIVO.map((tipo) => (
             <option key={tipo.valor} value={tipo.valor}>
               {tipo.rotulo}

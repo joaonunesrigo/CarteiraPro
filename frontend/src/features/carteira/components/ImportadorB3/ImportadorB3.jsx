@@ -29,16 +29,10 @@ export function ImportadorB3({
         >
           investidor.b3.com.br
         </a>
-        , acesse{' '}
-        <strong className="text-slate-300">
-          Minhas carteiras → Investimentos → Posição
-        </strong>
-        , filtre e baixe em{' '}
-        <strong className="text-slate-300">Excel (.xlsx)</strong>. São importadas
-        as abas <strong className="text-slate-300">Ações</strong>,{' '}
-        <strong className="text-slate-300">Fundo de Investimento</strong> e{' '}
-        <strong className="text-slate-300">Empréstimos</strong> (ativos em
-        aluguel). O arquivo não traz preço médio — preencha na tabela abaixo.
+        , acesse <strong className="text-slate-300">Minhas carteiras → Investimentos → Posição</strong>, filtre e baixe em{' '}
+        <strong className="text-slate-300">Excel (.xlsx)</strong>. São importadas as abas <strong className="text-slate-300">Ações</strong>,{' '}
+        <strong className="text-slate-300">Fundo de Investimento</strong> e <strong className="text-slate-300">Empréstimos</strong> (ativos
+        em aluguel). O arquivo não traz preço médio — preencha na tabela abaixo.
       </p>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -55,9 +49,7 @@ export function ImportadorB3({
           />
         </label>
 
-        {nomeArquivo && (
-          <span className="text-sm text-slate-500">{nomeArquivo}</span>
-        )}
+        {nomeArquivo && <span className="text-sm text-slate-500">{nomeArquivo}</span>}
 
         {linhas.length > 0 && (
           <Button variante="secondary" type="button" onClick={limparPreview}>
@@ -75,17 +67,10 @@ export function ImportadorB3({
       {linhas.length > 0 && (
         <div className="mt-6">
           <div className="mb-4 flex flex-wrap items-center gap-3">
-            <Button
-              variante="secondary"
-              type="button"
-              onClick={aplicarPrecoFechamentoComoPm}
-            >
+            <Button variante="secondary" type="button" onClick={aplicarPrecoFechamentoComoPm}>
               Usar preço de fechamento como PM
             </Button>
-            <p className="text-xs text-amber-400/90">
-              O preço de fechamento é cotação de mercado, não o preço médio real
-              de compra.
-            </p>
+            <p className="text-xs text-amber-400/90">O preço de fechamento é cotação de mercado, não o preço médio real de compra.</p>
           </div>
 
           <div className="overflow-x-auto rounded-lg border border-slate-700">
@@ -103,12 +88,7 @@ export function ImportadorB3({
               </thead>
               <tbody>
                 {linhas.map((linha) => (
-                  <tr
-                    key={linha.id}
-                    className={`border-b border-slate-800 ${
-                      linha.jaCadastrado ? 'opacity-50' : ''
-                    }`}
-                  >
+                  <tr key={linha.id} className={`border-b border-slate-800 ${linha.jaCadastrado ? 'opacity-50' : ''}`}>
                     <td className="px-3 py-2">
                       <input
                         type="checkbox"
@@ -120,15 +100,9 @@ export function ImportadorB3({
                     </td>
                     <td className="px-3 py-2 font-medium text-white">
                       {linha.ticker}
-                      {linha.jaCadastrado && (
-                        <span className="ml-2 text-xs text-slate-500">
-                          já na carteira
-                        </span>
-                      )}
+                      {linha.jaCadastrado && <span className="ml-2 text-xs text-slate-500">já na carteira</span>}
                     </td>
-                    <td className="px-3 py-2 text-slate-300">
-                      {linha.quantidade}
-                    </td>
+                    <td className="px-3 py-2 text-slate-300">{linha.quantidade}</td>
                     <td className="px-3 py-2">
                       <input
                         type="number"
@@ -136,9 +110,7 @@ export function ImportadorB3({
                         min="0"
                         disabled={linha.jaCadastrado}
                         value={linha.precoMedio}
-                        onChange={(e) =>
-                          atualizarLinha(linha.id, 'precoMedio', e.target.value)
-                        }
+                        onChange={(e) => atualizarLinha(linha.id, 'precoMedio', e.target.value)}
                         placeholder="0,00"
                         className="w-24 rounded border border-slate-600 bg-slate-900 px-2 py-1 text-white disabled:opacity-50"
                       />
@@ -154,13 +126,7 @@ export function ImportadorB3({
                       <Select
                         disabled={linha.jaCadastrado}
                         value={linha.tipo}
-                        onChange={(e) =>
-                          atualizarLinha(
-                            linha.id,
-                            'tipo',
-                            Number(e.target.value),
-                          )
-                        }
+                        onChange={(e) => atualizarLinha(linha.id, 'tipo', Number(e.target.value))}
                         className="min-w-[7rem]"
                       >
                         {TIPOS_ATIVO.map((t) => (
@@ -170,9 +136,7 @@ export function ImportadorB3({
                         ))}
                       </Select>
                     </td>
-                    <td className="px-3 py-2 text-xs text-slate-500">
-                      {linha.origemAba}
-                    </td>
+                    <td className="px-3 py-2 text-xs text-slate-500">{linha.origemAba}</td>
                   </tr>
                 ))}
               </tbody>
@@ -180,14 +144,8 @@ export function ImportadorB3({
           </div>
 
           <div className="mt-4 flex justify-end">
-            <Button
-              type="button"
-              disabled={importando || totalSelecionadas === 0}
-              onClick={confirmarImportacao}
-            >
-              {importando
-                ? 'Importando…'
-                : `Importar ${totalSelecionadas} ativo(s)`}
+            <Button type="button" disabled={importando || totalSelecionadas === 0} onClick={confirmarImportacao}>
+              {importando ? 'Importando…' : `Importar ${totalSelecionadas} ativo(s)`}
             </Button>
           </div>
         </div>

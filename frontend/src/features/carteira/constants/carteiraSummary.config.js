@@ -1,7 +1,11 @@
 import { formatarMoeda, formatarPercentual } from '../../../utils/format'
 
 export const CONFIG_CARTOES_RESUMO = [
-  { rotulo: 'Total investido', chave: 'totalInvestido', formatar: formatarMoeda },
+  {
+    rotulo: 'Total investido',
+    chave: 'totalInvestido',
+    formatar: formatarMoeda,
+  },
   { rotulo: 'Valor atual', chave: 'totalAtual', formatar: formatarMoeda },
   {
     rotulo: 'Rentabilidade (R$)',

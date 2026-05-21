@@ -5,16 +5,7 @@ export function GraficoAlocacao({ dados }) {
   return (
     <ResponsiveContainer width="100%" height={280}>
       <PieChart>
-        <Pie
-          data={dados}
-          dataKey="valor"
-          nameKey="ticker"
-          cx="50%"
-          cy="50%"
-          innerRadius={56}
-          outerRadius={96}
-          paddingAngle={2}
-        >
+        <Pie data={dados} dataKey="valor" nameKey="ticker" cx="50%" cy="50%" innerRadius={56} outerRadius={96} paddingAngle={2}>
           {dados.map((item) => (
             <Cell key={item.ticker} fill={item.cor} stroke="transparent" />
           ))}

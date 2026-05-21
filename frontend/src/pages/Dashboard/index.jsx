@@ -1,10 +1,7 @@
 import { useConfirmDialogContext } from '../../components/ConfirmDialog'
 import { useTabs } from '../../components/Tabs'
 import { useToastContext } from '../../components/Toast'
-import {
-  useAdicionarAtivo,
-  useExcluirAtivo,
-} from '../../features/carteira/hooks/useAtivos'
+import { useAdicionarAtivo, useExcluirAtivo } from '../../features/carteira/hooks/useAtivos'
 import { useImportarB3 } from '../../features/carteira/hooks/useImportarB3'
 import { useCarteira } from '../../features/carteira/hooks/useCarteira'
 import { useOperacoesAtivo } from '../../features/carteira/hooks/useOperacoesAtivo'
@@ -17,31 +14,15 @@ export default function DashboardPage() {
   const { mostrarToast } = useToastContext()
   const { solicitarConfirmacao } = useConfirmDialogContext()
   const { abaAtiva, mudarAba } = useTabs(ABA_INICIAL_DASHBOARD)
-  const { cartoesResumo, linhasAtivos, dadosGraficos, carregando, erro, recarregar } =
-    useCarteira()
+  const { cartoesResumo, linhasAtivos, dadosGraficos, carregando, erro } = useCarteira()
 
   const tickersCadastrados = linhasAtivos.map((linha) => linha.ticker)
-  const formularioAtivo = useAdicionarAtivo(
-    recarregar,
-    tickersCadastrados,
-    mostrarToast,
-  )
-  const { excluirAtivo, excluirTodosAtivos } = useExcluirAtivo(
-    recarregar,
-    mostrarToast,
-    solicitarConfirmacao,
-  )
-  const importadorB3 = useImportarB3(recarregar, mostrarToast)
-  const operacoesAtivo = useOperacoesAtivo(
-    recarregar,
-    mostrarToast,
-    solicitarConfirmacao,
-  )
+  const formularioAtivo = useAdicionarAtivo(tickersCadastrados, mostrarToast)
+  const { excluirAtivo, excluirTodosAtivos } = useExcluirAtivo(mostrarToast, solicitarConfirmacao)
+  const importadorB3 = useImportarB3(mostrarToast)
+  const operacoesAtivo = useOperacoesAtivo(mostrarToast, solicitarConfirmacao)
   const proventos = useProventos()
-  const importadorMovimentacaoB3 = useImportarMovimentacaoB3(
-    proventos.recarregar,
-    mostrarToast,
-  )
+  const importadorMovimentacaoB3 = useImportarMovimentacaoB3(mostrarToast)
 
   return (
     <Dashboard

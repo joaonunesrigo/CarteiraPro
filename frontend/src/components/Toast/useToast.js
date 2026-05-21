@@ -15,11 +15,7 @@ export function useToast() {
       timeoutsRef.current.delete(id)
     }
 
-    setToasts((atual) =>
-      atual.map((toast) =>
-        toast.id === id ? { ...toast, saindo: true } : toast,
-      ),
-    )
+    setToasts((atual) => atual.map((toast) => (toast.id === id ? { ...toast, saindo: true } : toast)))
 
     const timeoutSaida = setTimeout(() => {
       setToasts((atual) => atual.filter((toast) => toast.id !== id))

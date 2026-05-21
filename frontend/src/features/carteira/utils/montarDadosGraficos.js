@@ -1,9 +1,7 @@
 import { CORES_GRAFICO, CORES_TIPO_ATIVO } from '../constants/graficos.constants'
 import { TIPOS_ATIVO } from '../constants/tiposAtivo'
 
-const ROTULO_TIPO_ATIVO = Object.fromEntries(
-  TIPOS_ATIVO.map((t) => [t.valor, t.rotulo]),
-)
+const ROTULO_TIPO_ATIVO = Object.fromEntries(TIPOS_ATIVO.map((t) => [t.valor, t.rotulo]))
 
 export function montarDadosGraficos(linhas) {
   if (!linhas?.length) {
@@ -16,18 +14,12 @@ export function montarDadosGraficos(linhas) {
     }
   }
 
-  const totalAtual = linhas.reduce(
-    (soma, ativo) => soma + Number(ativo.valorAtual),
-    0,
-  )
+  const totalAtual = linhas.reduce((soma, ativo) => soma + Number(ativo.valorAtual), 0)
 
   const alocacao = linhas.map((ativo, indice) => ({
     ticker: ativo.ticker,
     valor: Number(ativo.valorAtual),
-    percentual:
-      totalAtual > 0
-        ? Math.round((Number(ativo.valorAtual) / totalAtual) * 1000) / 10
-        : 0,
+    percentual: totalAtual > 0 ? Math.round((Number(ativo.valorAtual) / totalAtual) * 1000) / 10 : 0,
     cor: CORES_GRAFICO[indice % CORES_GRAFICO.length],
   }))
 
@@ -42,8 +34,7 @@ export function montarDadosGraficos(linhas) {
       tipo: Number(tipo),
       rotulo: ROTULO_TIPO_ATIVO[Number(tipo)] ?? 'Outros',
       valor,
-      percentual:
-        totalAtual > 0 ? Math.round((valor / totalAtual) * 1000) / 10 : 0,
+      percentual: totalAtual > 0 ? Math.round((valor / totalAtual) * 1000) / 10 : 0,
       cor: CORES_TIPO_ATIVO[Number(tipo)] ?? '#94a3b8',
     }))
     .sort((a, b) => b.valor - a.valor)

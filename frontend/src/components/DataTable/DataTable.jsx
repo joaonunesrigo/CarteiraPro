@@ -23,9 +23,7 @@ export function DataTable({
       {carregando ? (
         <p className="px-4 py-6 text-sm text-slate-400">{estadoCarregando}</p>
       ) : itens.length === 0 ? (
-        <p className="px-4 py-6 text-center text-sm text-slate-400">
-          {estadoVazio}
-        </p>
+        <p className="px-4 py-6 text-center text-sm text-slate-400">{estadoVazio}</p>
       ) : (
         <>
           <div className="overflow-x-auto">
@@ -33,10 +31,7 @@ export function DataTable({
               <thead className="bg-slate-900 text-slate-400">
                 <tr>
                   {colunas.map((coluna) => (
-                    <th
-                      key={coluna.chave}
-                      className={`px-4 py-3 font-medium ${coluna.classeCabecalho ?? ''}`}
-                    >
+                    <th key={coluna.chave} className={`px-4 py-3 font-medium ${coluna.classeCabecalho ?? ''}`}>
                       {coluna.titulo}
                     </th>
                   ))}
@@ -47,15 +42,10 @@ export function DataTable({
                   <tr key={obterChaveLinha(item)} className="text-slate-200">
                     {colunas.map((coluna) => {
                       const classeCelula =
-                        typeof coluna.classeCelula === 'function'
-                          ? coluna.classeCelula(item)
-                          : (coluna.classeCelula ?? '')
+                        typeof coluna.classeCelula === 'function' ? coluna.classeCelula(item) : (coluna.classeCelula ?? '')
 
                       return (
-                        <td
-                          key={coluna.chave}
-                          className={`px-4 py-3 ${classeCelula}`}
-                        >
+                        <td key={coluna.chave} className={`px-4 py-3 ${classeCelula}`}>
                           {coluna.render(item)}
                         </td>
                       )

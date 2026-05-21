@@ -5,9 +5,7 @@ export function Input({ rotulo, erro, id, className, ...props }) {
   const campoId = id ?? props.name
 
   if (!rotulo) {
-    return (
-      <InputBase id={campoId} erro={erro} className={className} {...props} />
-    )
+    return <InputBase id={campoId} erro={erro} className={className} {...props} />
   }
 
   const erroId = campoId ? `${campoId}-erro` : undefined
@@ -18,13 +16,7 @@ export function Input({ rotulo, erro, id, className, ...props }) {
         <label htmlFor={campoId} className={rotuloCampo}>
           {rotulo}
         </label>
-        <InputBase
-          id={campoId}
-          erro={erro}
-          className={className}
-          aria-describedby={erro ? erroId : undefined}
-          {...props}
-        />
+        <InputBase id={campoId} erro={erro} className={className} aria-describedby={erro ? erroId : undefined} {...props} />
       </div>
       {erro && (
         <p id={erroId} role="alert" className={mensagemErroCampo}>

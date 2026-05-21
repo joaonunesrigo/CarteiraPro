@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useImportarAtivosMutation } from '../mutations/carteiraMutations'
 import { carteiraApi } from '../services/carteira.api'
+import { useCarteiraStore } from '../stores/carteiraStore'
 
 function criarLinhaPreview(dados, indice) {
   return {
@@ -7,8 +8,7 @@ function criarLinhaPreview(dados, indice) {
     ticker: dados.ticker,
     quantidade: dados.quantidade,
     precoFechamento: dados.precoFechamento ?? null,
-    precoMedio:
-      dados.precoMedio != null ? String(dados.precoMedio) : '',
+    precoMedio: dados.precoMedio != null ? String(dados.precoMedio) : '',
     tipo: dados.tipo,
     jaCadastrado: dados.jaCadastrado,
     origemAba: dados.origemAba,
@@ -16,12 +16,14 @@ function criarLinhaPreview(dados, indice) {
   }
 }
 
-export function useImportarB3(recarregar, mostrarToast) {
-  const [linhas, setLinhas] = useState([])
-  const [processandoArquivo, setProcessandoArquivo] = useState(false)
-  const [importando, setImportando] = useState(false)
-  const [erroArquivo, setErroArquivo] = useState(null)
-  const [nomeArquivo, setNomeArquivo] = useState(null)
+export function useImportarB3(mostrarToast) {
+  const importacao = useCarteiraStore((state) => state.importacaoAtivos)
+  const setImportacao = useCarteiraStore((state) => state.setImportacaoAtivos)
+  const atualizarLinhaImportacaoAtivo = useCarteiraStore((state) => state.atualizarLinhaImportacaoAtivo)
+  const alternarAtivoSelecionadoImportacao = useCarteiraStore((state) => state.alternarAtivoSelecionadoImportacao)
+  const limparImportacaoAtivos = useCarteiraStore((state) => state.limparImportacaoAtivos)
+  const importarAtivos = useImportarAtivosMutation()
+  const { linhas, processandoArquivo, erroArquivo, nomeArquivo } = importacao
 
   async function aoSelecionarArquivo(evento) {
     const arquivo = evento.target.files?.[0]
@@ -29,62 +31,52 @@ export function useImportarB3(recarregar, mostrarToast) {
 
     if (!arquivo) return
 
-    setErroArquivo(null)
-    setProcessandoArquivo(true)
-    setNomeArquivo(arquivo.name)
+    setImportacao({
+      erroArquivo: null,
+      processandoArquivo: true,
+      nomeArquivo: arquivo.name,
+    })
 
     try {
       const resposta = await carteiraApi.previewImportacaoB3(arquivo)
-      const preview = (resposta.linhas ?? []).map((dados, indice) =>
-        criarLinhaPreview(dados, indice),
-      )
-      setLinhas(preview)
+      const preview = (resposta.linhas ?? []).map((dados, indice) => criarLinhaPreview(dados, indice))
+      setImportacao({ linhas: preview })
 
       if (preview.length === 0) {
-        setErroArquivo('Nenhum ativo encontrado no arquivo.')
+        setImportacao({ erroArquivo: 'Nenhum ativo encontrado no arquivo.' })
       }
     } catch (err) {
-      setLinhas([])
-      setErroArquivo(err.message || 'Erro ao ler o arquivo.')
+      setImportacao({
+        linhas: [],
+        erroArquivo: err.message || 'Erro ao ler o arquivo.',
+      })
     } finally {
-      setProcessandoArquivo(false)
+      setImportacao({ processandoArquivo: false })
     }
   }
 
   function atualizarLinha(id, campo, valor) {
-    setLinhas((atual) =>
-      atual.map((linha) =>
-        linha.id === id ? { ...linha, [campo]: valor } : linha,
-      ),
-    )
+    atualizarLinhaImportacaoAtivo(id, campo, valor)
   }
 
   function alternarSelecionado(id) {
-    setLinhas((atual) =>
-      atual.map((linha) =>
-        linha.id === id && !linha.jaCadastrado
-          ? { ...linha, selecionado: !linha.selecionado }
-          : linha,
-      ),
-    )
+    alternarAtivoSelecionadoImportacao(id)
   }
 
   function aplicarPrecoFechamentoComoPm() {
-    setLinhas((atual) =>
-      atual.map((linha) => {
+    setImportacao({
+      linhas: linhas.map((linha) => {
         if (!linha.precoFechamento) return linha
         return {
           ...linha,
           precoMedio: String(linha.precoFechamento),
         }
       }),
-    )
+    })
   }
 
   function limparPreview() {
-    setLinhas([])
-    setErroArquivo(null)
-    setNomeArquivo(null)
+    limparImportacaoAtivos()
   }
 
   async function confirmarImportacao() {
@@ -101,17 +93,12 @@ export function useImportarB3(recarregar, mostrarToast) {
     }
 
     if (invalidas.length > 0) {
-      mostrarToast?.(
-        'Preencha o preço médio de todos os ativos selecionados.',
-        'erro',
-      )
+      mostrarToast?.('Preencha o preço médio de todos os ativos selecionados.', 'erro')
       return
     }
 
-    setImportando(true)
-
     try {
-      const resultado = await carteiraApi.importarAtivos({
+      const resultado = await importarAtivos.mutateAsync({
         ignorarDuplicados: true,
         ativos: selecionadas.map((l) => ({
           ticker: l.ticker,
@@ -128,8 +115,7 @@ export function useImportarB3(recarregar, mostrarToast) {
       if (ignorados > 0) partes.push(`${ignorados} ignorado(s)`)
       if (erros?.length > 0) partes.push(`${erros.length} erro(s)`)
 
-      const tipo =
-        erros?.length > 0 && importados === 0 ? 'erro' : 'sucesso'
+      const tipo = erros?.length > 0 && importados === 0 ? 'erro' : 'sucesso'
 
       mostrarToast?.(partes.join(', ') || 'Importação concluída.', tipo)
 
@@ -139,23 +125,18 @@ export function useImportarB3(recarregar, mostrarToast) {
 
       if (importados > 0) {
         limparPreview()
-        recarregar()
       }
     } catch (err) {
       mostrarToast?.(err.message || 'Erro ao importar ativos.', 'erro')
-    } finally {
-      setImportando(false)
     }
   }
 
-  const totalSelecionadas = linhas.filter(
-    (l) => l.selecionado && !l.jaCadastrado,
-  ).length
+  const totalSelecionadas = linhas.filter((l) => l.selecionado && !l.jaCadastrado).length
 
   return {
     linhas,
     processandoArquivo,
-    importando,
+    importando: importarAtivos.isPending,
     erroArquivo,
     nomeArquivo,
     totalSelecionadas,

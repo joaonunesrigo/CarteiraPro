@@ -8,14 +8,7 @@ const TAMANHOS = {
   full: 'max-w-7xl',
 }
 
-export function Modal({
-  aberto,
-  titulo,
-  acaoCabecalho,
-  onFechar,
-  tamanho = 'lg',
-  children,
-}) {
+export function Modal({ aberto, titulo, acaoCabecalho, onFechar, tamanho = 'lg', children }) {
   useEffect(() => {
     if (!aberto) return undefined
 
@@ -42,10 +35,7 @@ export function Modal({
   const classeTamanho = TAMANHOS[tamanho] ?? TAMANHOS.lg
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      role="presentation"
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" role="presentation">
       <button
         type="button"
         className="absolute inset-0 animate-modal-overlay-in bg-slate-950/70 backdrop-blur-sm"
@@ -72,12 +62,7 @@ export function Modal({
               aria-label="Fechar"
               className="rounded-md p-1 text-slate-400 transition hover:bg-slate-800 hover:text-white"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="h-5 w-5"
-              >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5">
                 <path
                   fillRule="evenodd"
                   d="M4.28 4.22a.75.75 0 011.06 0L10 8.94l4.66-4.72a.75.75 0 111.06 1.06L11.06 10l4.66 4.72a.75.75 0 11-1.06 1.06L10 11.06l-4.66 4.72a.75.75 0 11-1.06-1.06L8.94 10 4.28 5.28a.75.75 0 010-1.06z"

@@ -1,38 +1,22 @@
-import { useState } from 'react'
 import { carteiraApi } from '../services/carteira.api'
-import {
-  formularioTemErros,
-  validarFormularioAtivo,
-} from '../utils/validarFormularioAtivo'
+import { useAdicionarAtivoMutation, useRemoverAtivoMutation, useRemoverTodosAtivosMutation } from '../mutations/carteiraMutations'
+import { useCarteiraStore } from '../stores/carteiraStore'
+import { formularioTemErros, validarFormularioAtivo } from '../utils/validarFormularioAtivo'
 import { normalizarTicker } from '../utils/validarTicker'
 
-const formularioInicial = {
-  ticker: '',
-  precoMedio: '',
-  quantidade: '',
-  tipo: 0,
-}
-
-const errosIniciais = {
-  ticker: null,
-  precoMedio: null,
-  quantidade: null,
-  tipo: null,
-}
-
-export function useAdicionarAtivo(
-  aoConcluir,
-  tickersCadastrados = [],
-  mostrarToast,
-) {
-  const [formulario, setFormulario] = useState(formularioInicial)
-  const [errosCampos, setErrosCampos] = useState(errosIniciais)
-  const [enviando, setEnviando] = useState(false)
+export function useAdicionarAtivo(tickersCadastrados = [], mostrarToast) {
+  const formulario = useCarteiraStore((state) => state.formularioAtivo)
+  const errosCampos = useCarteiraStore((state) => state.errosAtivo)
+  const enviando = useCarteiraStore((state) => state.enviandoAtivo)
+  const setCampoFormularioAtivo = useCarteiraStore((state) => state.setCampoFormularioAtivo)
+  const setErrosAtivo = useCarteiraStore((state) => state.setErrosAtivo)
+  const setEnviandoAtivo = useCarteiraStore((state) => state.setEnviandoAtivo)
+  const resetFormularioAtivo = useCarteiraStore((state) => state.resetFormularioAtivo)
+  const adicionarAtivo = useAdicionarAtivoMutation()
 
   function atualizarCampo(campo) {
     return (evento) => {
-      setFormulario((atual) => ({ ...atual, [campo]: evento.target.value }))
-      setErrosCampos((atual) => ({ ...atual, [campo]: null }))
+      setCampoFormularioAtivo(campo, evento.target.value)
     }
   }
 
@@ -47,13 +31,13 @@ export function useAdicionarAtivo(
 
   async function enviarFormulario(evento) {
     evento.preventDefault()
-    setEnviando(true)
+    setEnviandoAtivo(true)
 
     const erros = validarFormularioAtivo(formulario, tickersCadastrados)
 
     if (formularioTemErros(erros)) {
-      setErrosCampos((atual) => ({ ...atual, ...erros }))
-      setEnviando(false)
+      setErrosAtivo(erros)
+      setEnviandoAtivo(false)
       return
     }
 
@@ -61,22 +45,20 @@ export function useAdicionarAtivo(
     const erroBrapi = await validarTickerExterno(ticker)
 
     if (erroBrapi) {
-      setErrosCampos((atual) => ({ ...atual, ticker: erroBrapi }))
-      setEnviando(false)
+      setErrosAtivo({ ticker: erroBrapi })
+      setEnviandoAtivo(false)
       return
     }
 
     try {
-      await carteiraApi.adicionarAtivo({
+      await adicionarAtivo.mutateAsync({
         ticker,
         precoMedio: Number(formulario.precoMedio),
         quantidade: Number(formulario.quantidade),
         tipo: Number(formulario.tipo),
       })
-      setFormulario(formularioInicial)
-      setErrosCampos(errosIniciais)
+      resetFormularioAtivo()
       mostrarToast(`${ticker} adicionado à carteira.`, 'sucesso')
-      aoConcluir()
     } catch (err) {
       const mensagem = err.message || 'Erro ao adicionar ativo'
       if (
@@ -84,12 +66,12 @@ export function useAdicionarAtivo(
         mensagem.toLowerCase().includes('encontrado') ||
         mensagem.toLowerCase().includes('cadastrado')
       ) {
-        setErrosCampos((atual) => ({ ...atual, ticker: mensagem }))
+        setErrosAtivo({ ticker: mensagem })
       } else {
         mostrarToast(mensagem, 'erro')
       }
     } finally {
-      setEnviando(false)
+      setEnviandoAtivo(false)
     }
   }
 
@@ -102,7 +84,10 @@ export function useAdicionarAtivo(
   }
 }
 
-export function useExcluirAtivo(aoConcluir, mostrarToast, solicitarConfirmacao) {
+export function useExcluirAtivo(mostrarToast, solicitarConfirmacao) {
+  const removerAtivo = useRemoverAtivoMutation()
+  const removerTodosAtivos = useRemoverTodosAtivosMutation()
+
   async function excluirAtivo(id, ticker) {
     if (!id) return
 
@@ -117,9 +102,8 @@ export function useExcluirAtivo(aoConcluir, mostrarToast, solicitarConfirmacao) 
     if (!confirmou) return
 
     try {
-      await carteiraApi.removerAtivo(id)
+      await removerAtivo.mutateAsync(id)
       mostrarToast?.(`${ticker} foi removido da carteira.`, 'sucesso')
-      aoConcluir()
     } catch (err) {
       mostrarToast?.(err.message || 'Erro ao remover ativo', 'erro')
     }
@@ -139,13 +123,9 @@ export function useExcluirAtivo(aoConcluir, mostrarToast, solicitarConfirmacao) 
     if (!confirmou) return
 
     try {
-      const resultado = await carteiraApi.removerTodosAtivos()
+      const resultado = await removerTodosAtivos.mutateAsync()
       const removidos = resultado?.removidos ?? quantidade
-      mostrarToast?.(
-        `${removidos} ativo(s) removido(s) da carteira.`,
-        'sucesso',
-      )
-      aoConcluir()
+      mostrarToast?.(`${removidos} ativo(s) removido(s) da carteira.`, 'sucesso')
     } catch (err) {
       mostrarToast?.(err.message || 'Erro ao remover ativos', 'erro')
     }

@@ -8,12 +8,8 @@ export function ChartTooltip({ active, payload, label, tipo = 'moeda' }) {
       {label && <p className="mb-1 font-medium text-white">{label}</p>}
       {payload.map((item) => (
         <p key={item.name} className="text-slate-300">
-          <span style={{ color: item.color || item.payload?.cor }}>
-            {item.name}:{' '}
-          </span>
-          {tipo === 'percentual'
-            ? formatarPercentual(item.value)
-            : formatarMoeda(item.value)}
+          <span style={{ color: item.color || item.payload?.cor }}>{item.name}: </span>
+          {tipo === 'percentual' ? formatarPercentual(item.value) : formatarMoeda(item.value)}
         </p>
       ))}
     </div>

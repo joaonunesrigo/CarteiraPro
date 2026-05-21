@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useImportarProventosMutation } from '../mutations/proventosMutations'
 import { proventosApi } from '../services/proventos.api'
+import { useProventosStore } from '../stores/proventosStore'
 
 function criarLinhaPreview(dados, indice) {
   return {
@@ -19,12 +20,13 @@ function criarLinhaPreview(dados, indice) {
   }
 }
 
-export function useImportarMovimentacaoB3(recarregar, mostrarToast) {
-  const [linhas, setLinhas] = useState([])
-  const [processandoArquivo, setProcessandoArquivo] = useState(false)
-  const [importando, setImportando] = useState(false)
-  const [erroArquivo, setErroArquivo] = useState(null)
-  const [nomeArquivo, setNomeArquivo] = useState(null)
+export function useImportarMovimentacaoB3(mostrarToast) {
+  const importacao = useProventosStore((state) => state.importacao)
+  const setImportacao = useProventosStore((state) => state.setImportacao)
+  const alternarSelecionadoImportacao = useProventosStore((state) => state.alternarSelecionadoImportacao)
+  const limparImportacao = useProventosStore((state) => state.limparImportacao)
+  const importarProventos = useImportarProventosMutation()
+  const { linhas, processandoArquivo, erroArquivo, nomeArquivo } = importacao
 
   async function aoSelecionarArquivo(evento) {
     const arquivo = evento.target.files?.[0]
@@ -32,59 +34,49 @@ export function useImportarMovimentacaoB3(recarregar, mostrarToast) {
 
     if (!arquivo) return
 
-    setErroArquivo(null)
-    setProcessandoArquivo(true)
-    setNomeArquivo(arquivo.name)
+    setImportacao({
+      erroArquivo: null,
+      processandoArquivo: true,
+      nomeArquivo: arquivo.name,
+    })
 
     try {
       const resposta = await proventosApi.previewImportacaoB3(arquivo)
-      const preview = (resposta.linhas ?? []).map((dados, indice) =>
-        criarLinhaPreview(dados, indice),
-      )
+      const preview = (resposta.linhas ?? []).map((dados, indice) => criarLinhaPreview(dados, indice))
 
-      setLinhas(preview)
+      setImportacao({ linhas: preview })
 
       if (preview.length === 0) {
-        setErroArquivo('Nenhum provento encontrado no arquivo.')
+        setImportacao({ erroArquivo: 'Nenhum provento encontrado no arquivo.' })
       }
     } catch (err) {
-      setLinhas([])
-      setErroArquivo(err.message || 'Erro ao ler o arquivo.')
+      setImportacao({
+        linhas: [],
+        erroArquivo: err.message || 'Erro ao ler o arquivo.',
+      })
     } finally {
-      setProcessandoArquivo(false)
+      setImportacao({ processandoArquivo: false })
     }
   }
 
   function alternarSelecionado(id) {
-    setLinhas((atual) =>
-      atual.map((linha) =>
-        linha.id === id && !linha.jaImportado
-          ? { ...linha, selecionado: !linha.selecionado }
-          : linha,
-      ),
-    )
+    alternarSelecionadoImportacao(id)
   }
 
   function limparPreview() {
-    setLinhas([])
-    setErroArquivo(null)
-    setNomeArquivo(null)
+    limparImportacao()
   }
 
   async function confirmarImportacao() {
-    const selecionadas = linhas.filter(
-      (linha) => linha.selecionado && !linha.jaImportado,
-    )
+    const selecionadas = linhas.filter((linha) => linha.selecionado && !linha.jaImportado)
 
     if (selecionadas.length === 0) {
       mostrarToast?.('Selecione ao menos um provento para importar.', 'erro')
       return
     }
 
-    setImportando(true)
-
     try {
-      const resultado = await proventosApi.importar({
+      const resultado = await importarProventos.mutateAsync({
         ignorarDuplicados: true,
         proventos: selecionadas.map((linha) => ({
           ticker: linha.ticker,
@@ -106,23 +98,18 @@ export function useImportarMovimentacaoB3(recarregar, mostrarToast) {
 
       if (importados > 0) {
         limparPreview()
-        recarregar()
       }
     } catch (err) {
       mostrarToast?.(err.message || 'Erro ao importar proventos.', 'erro')
-    } finally {
-      setImportando(false)
     }
   }
 
-  const totalSelecionadas = linhas.filter(
-    (linha) => linha.selecionado && !linha.jaImportado,
-  ).length
+  const totalSelecionadas = linhas.filter((linha) => linha.selecionado && !linha.jaImportado).length
 
   return {
     linhas,
     processandoArquivo,
-    importando,
+    importando: importarProventos.isPending,
     erroArquivo,
     nomeArquivo,
     totalSelecionadas,

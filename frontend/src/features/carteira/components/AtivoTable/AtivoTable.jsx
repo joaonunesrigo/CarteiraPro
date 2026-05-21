@@ -2,12 +2,7 @@ import { Button } from '../../../../components/Button'
 import { DataTable } from '../../../../components/DataTable'
 import { IconeLixeira } from '../../../../components/Icons'
 
-export function AtivoTable({
-  linhas,
-  excluirAtivo,
-  excluirTodosAtivos,
-  abrirPainelOperacoes,
-}) {
+export function AtivoTable({ linhas, excluirAtivo, excluirTodosAtivos, abrirPainelOperacoes }) {
   const colunas = [
     {
       chave: 'ticker',
@@ -36,23 +31,13 @@ export function AtivoTable({
     {
       chave: 'rentabilidadePercent',
       titulo: 'Rent. %',
-      classeCelula: (ativo) =>
-        `tabular-nums ${
-          ativo.rentabilidadePercentPositiva
-            ? 'text-emerald-400'
-            : 'text-red-400'
-        }`,
+      classeCelula: (ativo) => `tabular-nums ${ativo.rentabilidadePercentPositiva ? 'text-emerald-400' : 'text-red-400'}`,
       render: (ativo) => ativo.rentabilidadePercentFormatada,
     },
     {
       chave: 'rentabilidadeReais',
       titulo: 'Rent. R$',
-      classeCelula: (ativo) =>
-        `tabular-nums ${
-          ativo.rentabilidadeReaisPositiva
-            ? 'text-emerald-400'
-            : 'text-red-400'
-        }`,
+      classeCelula: (ativo) => `tabular-nums ${ativo.rentabilidadeReaisPositiva ? 'text-emerald-400' : 'text-red-400'}`,
       render: (ativo) => ativo.rentabilidadeReaisFormatada,
     },
     {
@@ -82,11 +67,7 @@ export function AtivoTable({
       titulo="Ativos"
       acao={
         linhas.length > 0 && (
-          <Button
-            variante="perigo"
-            type="button"
-            onClick={() => excluirTodosAtivos(linhas.length)}
-          >
+          <Button variante="perigo" type="button" onClick={() => excluirTodosAtivos(linhas.length)}>
             Excluir todos
           </Button>
         )

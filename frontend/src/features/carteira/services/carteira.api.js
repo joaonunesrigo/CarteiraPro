@@ -6,8 +6,7 @@ export const carteiraApi = {
   obterRentabilidade: () => apiClient('/carteira/rentabilidade'),
   listarAtivos: () => apiClient('/ativos'),
   obterCotacao: (ticker) => apiClient(`/ativos/${ticker}/cotacao`),
-  adicionarAtivo: (dados) =>
-    apiClient('/ativos', { method: 'POST', body: JSON.stringify(dados) }),
+  adicionarAtivo: (dados) => apiClient('/ativos', { method: 'POST', body: JSON.stringify(dados) }),
   removerAtivo: (id) => apiClient(`/ativos/${id}`, { method: 'DELETE' }),
   removerTodosAtivos: () => apiClient('/ativos/todos', { method: 'DELETE' }),
   listarOperacoes: (ativoId) => apiClient(`/ativos/${ativoId}/operacoes`),
@@ -17,8 +16,7 @@ export const carteiraApi = {
       body: JSON.stringify(dados),
     }),
   removerOperacao: (id) => apiClient(`/operacoes/${id}`, { method: 'DELETE' }),
-  previewImportacaoB3: (arquivo) =>
-    apiUpload('/ativos/importar/preview', arquivo),
+  previewImportacaoB3: (arquivo) => apiUpload('/ativos/importar/preview', arquivo),
   importarAtivos: (dados) =>
     apiClient('/ativos/importar', {
       method: 'POST',

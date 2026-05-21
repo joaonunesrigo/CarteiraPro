@@ -57,7 +57,7 @@ namespace Infrastructure.Migrations
                     "Id",
                     "Id",
                     0,
-                    "DataCadastro",
+                    date_trunc('day', "DataCadastro" AT TIME ZONE 'UTC') AT TIME ZONE 'UTC',
                     "Quantidade",
                     "PrecoMedio",
                     0,

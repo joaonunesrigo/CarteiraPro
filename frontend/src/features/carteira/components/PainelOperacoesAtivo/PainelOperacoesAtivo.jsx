@@ -4,10 +4,7 @@ import { IconeLixeira } from '../../../../components/Icons'
 import { Input } from '../../../../components/Input'
 import { Modal } from '../../../../components/Modal'
 import { Select } from '../../../../components/Select'
-import {
-  OPCOES_TIPO_OPERACAO,
-  TIPOS_OPERACAO,
-} from '../../constants/tiposOperacao'
+import { OPCOES_TIPO_OPERACAO, TIPOS_OPERACAO } from '../../constants/tiposOperacao'
 
 const moeda = new Intl.NumberFormat('pt-BR', {
   style: 'currency',
@@ -46,8 +43,7 @@ export function PainelOperacoesAtivo({
     {
       chave: 'tipo',
       titulo: 'Tipo',
-      classeCelula: (operacao) =>
-        operacao.tipo === 0 ? 'text-emerald-300' : 'text-red-300',
+      classeCelula: (operacao) => (operacao.tipo === 0 ? 'text-emerald-300' : 'text-red-300'),
       render: (operacao) => TIPOS_OPERACAO[operacao.tipo] ?? 'Operação',
     },
     {
@@ -92,25 +88,11 @@ export function PainelOperacoesAtivo({
   ]
 
   return (
-    <Modal
-      aberto={Boolean(ativo)}
-      onFechar={fecharPainel}
-      tamanho="xl"
-      titulo={ativo ? `Operações - ${ativo.ticker}` : 'Operações'}
-    >
+    <Modal aberto={Boolean(ativo)} onFechar={fecharPainel} tamanho="xl" titulo={ativo ? `Operações - ${ativo.ticker}` : 'Operações'}>
       {ativo && (
         <div className="space-y-6">
-          <form
-            noValidate
-            onSubmit={adicionarOperacao}
-            className="grid gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-6"
-          >
-            <Select
-              rotulo="Tipo"
-              id="tipoOperacao"
-              value={formulario.tipo}
-              onChange={atualizarCampo('tipo')}
-            >
+          <form noValidate onSubmit={adicionarOperacao} className="grid gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-6">
+            <Select rotulo="Tipo" id="tipoOperacao" value={formulario.tipo} onChange={atualizarCampo('tipo')}>
               {OPCOES_TIPO_OPERACAO.map((tipo) => (
                 <option key={tipo.valor} value={tipo.valor}>
                   {tipo.rotulo}
@@ -118,13 +100,7 @@ export function PainelOperacoesAtivo({
               ))}
             </Select>
 
-            <Input
-              rotulo="Data"
-              id="dataOperacao"
-              type="date"
-              value={formulario.data}
-              onChange={atualizarCampo('data')}
-            />
+            <Input rotulo="Data" id="dataOperacao" type="date" value={formulario.data} onChange={atualizarCampo('data')} />
 
             <Input
               rotulo="Quantidade"
