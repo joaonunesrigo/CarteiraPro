@@ -1,5 +1,4 @@
 import { Button } from '../../../../components/Button'
-import { Card } from '../../../../components/Card'
 import { Select } from '../../../../components/Select'
 import { TIPOS_ATIVO } from '../../constants/tiposAtivo'
 
@@ -18,8 +17,8 @@ export function ImportadorB3({
   confirmarImportacao,
 }) {
   return (
-    <Card titulo="Importar da B3" className="mb-8">
-      <p className="mb-4 text-sm leading-relaxed text-slate-400">
+    <div className="space-y-4">
+      <p className="text-sm leading-relaxed text-slate-400">
         No portal{' '}
         <a
           href="https://www.investidor.b3.com.br/"
@@ -150,6 +149,6 @@ export function ImportadorB3({
           </div>
         </div>
       )}
-    </Card>
+    </div>
   )
 }

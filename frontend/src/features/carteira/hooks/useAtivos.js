@@ -4,7 +4,7 @@ import { useCarteiraStore } from '../stores/carteiraStore'
 import { formularioTemErros, validarFormularioAtivo } from '../utils/validarFormularioAtivo'
 import { normalizarTicker } from '../utils/validarTicker'
 
-export function useAdicionarAtivo(tickersCadastrados = [], mostrarToast) {
+export function useAdicionarAtivo(tickersCadastrados = [], mostrarToast, aoConcluir) {
   const formulario = useCarteiraStore((state) => state.formularioAtivo)
   const errosCampos = useCarteiraStore((state) => state.errosAtivo)
   const enviando = useCarteiraStore((state) => state.enviandoAtivo)
@@ -59,6 +59,7 @@ export function useAdicionarAtivo(tickersCadastrados = [], mostrarToast) {
       })
       resetFormularioAtivo()
       mostrarToast(`${ticker} adicionado à carteira.`, 'sucesso')
+      aoConcluir?.()
     } catch (err) {
       const mensagem = err.message || 'Erro ao adicionar ativo'
       if (

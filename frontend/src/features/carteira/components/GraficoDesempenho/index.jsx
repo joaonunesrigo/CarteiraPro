@@ -1,0 +1,1 @@
+export { GraficoDesempenhoCarteira } from './GraficoDesempenhoCarteira'

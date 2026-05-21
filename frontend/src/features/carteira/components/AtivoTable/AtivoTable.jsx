@@ -2,7 +2,7 @@ import { Button } from '../../../../components/Button'
 import { DataTable } from '../../../../components/DataTable'
 import { IconeLixeira } from '../../../../components/Icons'
 
-export function AtivoTable({ linhas, excluirAtivo, excluirTodosAtivos, abrirPainelOperacoes }) {
+export function AtivoTable({ linhas, excluirAtivo, excluirTodosAtivos, abrirPainelOperacoes, abrirAdicionarAtivo, abrirImportadorB3 }) {
   const colunas = [
     {
       chave: 'ticker',
@@ -64,18 +64,30 @@ export function AtivoTable({ linhas, excluirAtivo, excluirTodosAtivos, abrirPain
 
   return (
     <DataTable
-      titulo="Ativos"
+      titulo="Meus ativos"
       acao={
-        linhas.length > 0 && (
-          <Button variante="perigo" type="button" onClick={() => excluirTodosAtivos(linhas.length)}>
-            Excluir todos
-          </Button>
-        )
+        <div className="flex flex-wrap items-center gap-2">
+          {abrirAdicionarAtivo && (
+            <Button type="button" onClick={abrirAdicionarAtivo}>
+              + Adicionar ativo
+            </Button>
+          )}
+          {abrirImportadorB3 && (
+            <Button variante="secondary" type="button" onClick={abrirImportadorB3}>
+              Importar B3
+            </Button>
+          )}
+          {linhas.length > 0 && (
+            <Button variante="perigo" type="button" onClick={() => excluirTodosAtivos(linhas.length)}>
+              Excluir todos
+            </Button>
+          )}
+        </div>
       }
       colunas={colunas}
       itens={linhas}
       obterChaveLinha={(ativo) => ativo.id ?? ativo.ticker}
-      estadoVazio="Nenhum ativo na carteira."
+      estadoVazio="Nenhum ativo na carteira. Use os botões acima para adicionar ou importar."
     />
   )
 }

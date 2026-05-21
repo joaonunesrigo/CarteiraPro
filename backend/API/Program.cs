@@ -49,6 +49,7 @@ builder.Services.AddScoped<IB3PosicaoParser, B3PosicaoParser>();
 builder.Services.AddScoped<IB3MovimentacaoParser, B3MovimentacaoParser>();
 builder.Services.AddScoped<GetRentabilidadeAtivosService>();
 builder.Services.AddScoped<GetResumoCarteiraService>();
+builder.Services.AddScoped<GetEvolucaoPatrimonialService>();
 builder.Services.AddScoped<CalcularPosicaoAtivoService>();
 builder.Services.AddScoped<GetOperacoesService>();
 builder.Services.AddScoped<AddOperacaoService>();
@@ -63,6 +64,7 @@ builder.Services.AddScoped<ImportarProventosB3Service>();
 // External Services
 builder.Services.AddHttpClient<IBrapiService, BrapiService>();
 builder.Services.AddSingleton<ICotacoesCache, CotacoesCache>();
+builder.Services.AddSingleton<IHistoricoCotacoesCache, HistoricoCotacoesCache>();
 builder.Services.AddHostedService<CotacoesRefreshService>();
 
 builder.Services.AddControllers();

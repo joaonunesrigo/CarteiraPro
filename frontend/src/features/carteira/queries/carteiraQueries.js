@@ -9,6 +9,10 @@ export function operacoesAtivoQueryKey(ativoId) {
   return ['ativos', ativoId, 'operacoes']
 }
 
+export function evolucaoCarteiraQueryKey(meses) {
+  return ['carteira', 'evolucao', meses]
+}
+
 export function useCarteiraQuery() {
   return useQuery({
     queryKey: carteiraQueryKey,
@@ -23,5 +27,13 @@ export function useOperacoesAtivoQuery(ativoId) {
     queryKey: operacoesAtivoQueryKey(ativoId),
     queryFn: () => carteiraApi.listarOperacoes(ativoId),
     enabled: Boolean(ativoId),
+  })
+}
+
+export function useEvolucaoCarteiraQuery(meses) {
+  return useQuery({
+    queryKey: evolucaoCarteiraQueryKey(meses),
+    queryFn: () => carteiraApi.obterEvolucao(meses),
+    staleTime: 10 * 60 * 1000,
   })
 }

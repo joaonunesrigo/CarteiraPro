@@ -4,6 +4,7 @@ import { apiUpload } from './apiUpload'
 export const carteiraApi = {
   obterResumo: () => apiClient('/carteira/resumo'),
   obterRentabilidade: () => apiClient('/carteira/rentabilidade'),
+  obterEvolucao: (meses = 12) => apiClient(`/carteira/evolucao?meses=${meses}`),
   listarAtivos: () => apiClient('/ativos'),
   obterCotacao: (ticker) => apiClient(`/ativos/${ticker}/cotacao`),
   adicionarAtivo: (dados) => apiClient('/ativos', { method: 'POST', body: JSON.stringify(dados) }),

@@ -16,7 +16,7 @@ function criarLinhaPreview(dados, indice) {
   }
 }
 
-export function useImportarB3(mostrarToast) {
+export function useImportarB3(mostrarToast, aoConcluir) {
   const importacao = useCarteiraStore((state) => state.importacaoAtivos)
   const setImportacao = useCarteiraStore((state) => state.setImportacaoAtivos)
   const atualizarLinhaImportacaoAtivo = useCarteiraStore((state) => state.atualizarLinhaImportacaoAtivo)
@@ -125,6 +125,7 @@ export function useImportarB3(mostrarToast) {
 
       if (importados > 0) {
         limparPreview()
+        aoConcluir?.()
       }
     } catch (err) {
       mostrarToast?.(err.message || 'Erro ao importar ativos.', 'erro')

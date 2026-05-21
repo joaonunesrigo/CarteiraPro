@@ -3,8 +3,9 @@ import { Tabs } from '../../components/Tabs'
 import { AtivoTable } from '../../features/carteira/components/AtivoTable'
 import { CarteiraGraficos } from '../../features/carteira/components/CarteiraGraficos'
 import { CarteiraSummary } from '../../features/carteira/components/CarteiraSummary'
-import { FormularioAtivo } from '../../features/carteira/components/FormularioAtivo'
-import { ImportadorB3 } from '../../features/carteira/components/ImportadorB3'
+import { ModalAdicionarAtivo } from '../../features/carteira/components/FormularioAtivo'
+import { GraficoDesempenhoCarteira } from '../../features/carteira/components/GraficoDesempenho'
+import { ModalImportadorB3 } from '../../features/carteira/components/ImportadorB3'
 import { PainelOperacoesAtivo } from '../../features/carteira/components/PainelOperacoesAtivo'
 import { PainelProventos } from '../../features/proventos/components/PainelProventos'
 
@@ -16,6 +17,7 @@ export function Dashboard({
   cotacaoAtualizadaEm,
   linhasAtivos,
   dadosGraficos,
+  desempenho,
   carregando,
   erro,
   formularioAtivo,
@@ -24,21 +26,29 @@ export function Dashboard({
   painelProventos,
   excluirAtivo,
   excluirTodosAtivos,
+  adicionarAtivoModal,
+  importadorB3Modal,
 }) {
   const paineis = {
     carteira: (
-      <>
+      <div className="space-y-6">
         <CarteiraSummary cartoes={cartoesResumo} cotacaoAtualizadaEm={cotacaoAtualizadaEm} />
-        <ImportadorB3 {...importadorB3} />
-        <FormularioAtivo {...formularioAtivo} />
+
+        <GraficoDesempenhoCarteira {...desempenho} />
+
         <AtivoTable
           linhas={linhasAtivos}
           excluirAtivo={excluirAtivo}
           excluirTodosAtivos={excluirTodosAtivos}
           abrirPainelOperacoes={operacoesAtivo.abrirPainel}
+          abrirAdicionarAtivo={adicionarAtivoModal.abrir}
+          abrirImportadorB3={importadorB3Modal.abrir}
         />
+
         <PainelOperacoesAtivo {...operacoesAtivo} />
-      </>
+        <ModalAdicionarAtivo aberto={adicionarAtivoModal.aberto} onFechar={adicionarAtivoModal.fechar} formularioAtivo={formularioAtivo} />
+        <ModalImportadorB3 aberto={importadorB3Modal.aberto} onFechar={importadorB3Modal.fechar} importadorB3={importadorB3} />
+      </div>
     ),
     graficos: <CarteiraGraficos dadosGraficos={dadosGraficos} />,
     proventos: <PainelProventos {...painelProventos} />,

@@ -1,9 +1,11 @@
+import { useState } from 'react'
 import { useConfirmDialogContext } from '../../components/ConfirmDialog'
 import { useTabs } from '../../components/Tabs'
 import { useToastContext } from '../../components/Toast'
 import { useAdicionarAtivo, useExcluirAtivo } from '../../features/carteira/hooks/useAtivos'
 import { useImportarB3 } from '../../features/carteira/hooks/useImportarB3'
 import { useCarteira } from '../../features/carteira/hooks/useCarteira'
+import { useDesempenhoCarteira } from '../../features/carteira/hooks/useDesempenhoCarteira'
 import { useOperacoesAtivo } from '../../features/carteira/hooks/useOperacoesAtivo'
 import { useImportarMovimentacaoB3 } from '../../features/proventos/hooks/useImportarMovimentacaoB3'
 import { useProventos } from '../../features/proventos/hooks/useProventos'
@@ -16,13 +18,17 @@ export default function DashboardPage() {
   const { abaAtiva, mudarAba } = useTabs(ABA_INICIAL_DASHBOARD)
   const { cartoesResumo, linhasAtivos, dadosGraficos, carregando, erro, cotacaoAtualizadaEm } = useCarteira()
 
+  const [adicionarAtivoAberto, setAdicionarAtivoAberto] = useState(false)
+  const [importadorB3Aberto, setImportadorB3Aberto] = useState(false)
+
   const tickersCadastrados = linhasAtivos.map((linha) => linha.ticker)
-  const formularioAtivo = useAdicionarAtivo(tickersCadastrados, mostrarToast)
+  const formularioAtivo = useAdicionarAtivo(tickersCadastrados, mostrarToast, () => setAdicionarAtivoAberto(false))
   const { excluirAtivo, excluirTodosAtivos } = useExcluirAtivo(mostrarToast, solicitarConfirmacao)
-  const importadorB3 = useImportarB3(mostrarToast)
+  const importadorB3 = useImportarB3(mostrarToast, () => setImportadorB3Aberto(false))
   const operacoesAtivo = useOperacoesAtivo(mostrarToast, solicitarConfirmacao)
   const proventos = useProventos()
   const importadorMovimentacaoB3 = useImportarMovimentacaoB3(mostrarToast)
+  const desempenho = useDesempenhoCarteira()
 
   return (
     <Dashboard
@@ -33,6 +39,7 @@ export default function DashboardPage() {
       cotacaoAtualizadaEm={cotacaoAtualizadaEm}
       linhasAtivos={linhasAtivos}
       dadosGraficos={dadosGraficos}
+      desempenho={desempenho}
       carregando={carregando}
       erro={erro}
       formularioAtivo={formularioAtivo}
@@ -44,6 +51,16 @@ export default function DashboardPage() {
       }}
       excluirAtivo={excluirAtivo}
       excluirTodosAtivos={excluirTodosAtivos}
+      adicionarAtivoModal={{
+        aberto: adicionarAtivoAberto,
+        abrir: () => setAdicionarAtivoAberto(true),
+        fechar: () => setAdicionarAtivoAberto(false),
+      }}
+      importadorB3Modal={{
+        aberto: importadorB3Aberto,
+        abrir: () => setImportadorB3Aberto(true),
+        fechar: () => setImportadorB3Aberto(false),
+      }}
     />
   )
 }

@@ -80,6 +80,89 @@ public class BrapiService : IBrapiService
         return quote.Nome;
     }
 
+    public async Task<IReadOnlyList<HistoricoCotacaoMensal>> ObterHistoricoMensalAsync(string ticker, int meses)
+    {
+        var tickerNormalizado = ticker.Trim().ToUpperInvariant();
+        var range = MapearRangeBrapi(meses);
+
+        var response = await _httpClient.GetAsync(
+            $"{BaseUrl}/quote/{tickerNormalizado}?range={range}&interval=1mo&token={_token}");
+
+        if (!response.IsSuccessStatusCode)
+            return [];
+
+        var json = await response.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(json);
+
+        if (!doc.RootElement.TryGetProperty("results", out var results) || results.GetArrayLength() == 0)
+            return [];
+
+        var primeiroResultado = results[0];
+        if (!primeiroResultado.TryGetProperty("historicalDataPrice", out var historico)
+            || historico.ValueKind != JsonValueKind.Array)
+            return [];
+
+        var fechamentosPorMes = new Dictionary<(int Ano, int Mes), decimal>();
+
+        foreach (var item in historico.EnumerateArray())
+        {
+            var data = ObterDataHistorico(item);
+            var fechamento = ObterFechamentoHistorico(item);
+            if (data is null || fechamento is null)
+                continue;
+
+            var chave = (data.Value.Year, data.Value.Month);
+            fechamentosPorMes[chave] = fechamento.Value;
+        }
+
+        return fechamentosPorMes
+            .Select(par => new HistoricoCotacaoMensal(par.Key.Ano, par.Key.Mes, par.Value))
+            .OrderBy(item => item.Ano).ThenBy(item => item.Mes)
+            .ToList();
+    }
+
+    private static string MapearRangeBrapi(int meses)
+    {
+        return meses switch
+        {
+            <= 1 => "1mo",
+            <= 3 => "3mo",
+            <= 6 => "6mo",
+            <= 12 => "1y",
+            <= 24 => "2y",
+            <= 60 => "5y",
+            <= 120 => "10y",
+            _ => "max",
+        };
+    }
+
+    private static DateTime? ObterDataHistorico(JsonElement item)
+    {
+        if (!item.TryGetProperty("date", out var dataElement))
+            return null;
+
+        if (dataElement.ValueKind == JsonValueKind.Number && dataElement.TryGetInt64(out var timestamp))
+            return DateTimeOffset.FromUnixTimeSeconds(timestamp).UtcDateTime;
+
+        if (dataElement.ValueKind == JsonValueKind.String && DateTime.TryParse(dataElement.GetString(), out var data))
+            return DateTime.SpecifyKind(data, DateTimeKind.Utc);
+
+        return null;
+    }
+
+    private static decimal? ObterFechamentoHistorico(JsonElement item)
+    {
+        if (item.TryGetProperty("adjustedClose", out var ajustado)
+            && ajustado.ValueKind == JsonValueKind.Number)
+            return ajustado.GetDecimal();
+
+        if (item.TryGetProperty("close", out var fechamento)
+            && fechamento.ValueKind == JsonValueKind.Number)
+            return fechamento.GetDecimal();
+
+        return null;
+    }
+
     private async Task<BrapiQuote?> ObterQuoteIndividualAsync(string ticker)
     {
         var response = await _httpClient.GetAsync(

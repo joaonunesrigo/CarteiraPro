@@ -10,13 +10,16 @@ public class CarteiraController : ControllerBase
 {
     private readonly GetResumoCarteiraService _getResumoCarteira;
     private readonly GetRentabilidadeAtivosService _getRentabilidade;
+    private readonly GetEvolucaoPatrimonialService _getEvolucao;
 
     public CarteiraController(
         GetResumoCarteiraService getResumoCarteira,
-        GetRentabilidadeAtivosService getRentabilidade)
+        GetRentabilidadeAtivosService getRentabilidade,
+        GetEvolucaoPatrimonialService getEvolucao)
     {
         _getResumoCarteira = getResumoCarteira;
         _getRentabilidade = getRentabilidade;
+        _getEvolucao = getEvolucao;
     }
 
     [HttpGet("resumo")]
@@ -31,5 +34,12 @@ public class CarteiraController : ControllerBase
     {
         var rentabilidade = await _getRentabilidade.ExecuteAsync();
         return Ok(rentabilidade);
+    }
+
+    [HttpGet("evolucao")]
+    public async Task<IActionResult> GetEvolucao([FromQuery] int meses = 12)
+    {
+        var evolucao = await _getEvolucao.ExecuteAsync(meses);
+        return Ok(evolucao);
     }
 }
