@@ -10,15 +10,18 @@ public class AddAtivoService
     private readonly IBrapiService _brapiService;
     private readonly IAtivoRepository _ativoRepository;
     private readonly IOperacaoRepository _operacaoRepository;
+    private readonly ICurrentUser _currentUser;
 
     public AddAtivoService(
         IAtivoRepository ativoRepository,
         IBrapiService brapiService,
-        IOperacaoRepository operacaoRepository)
+        IOperacaoRepository operacaoRepository,
+        ICurrentUser currentUser)
     {
         _ativoRepository = ativoRepository;
         _brapiService = brapiService;
         _operacaoRepository = operacaoRepository;
+        _currentUser = currentUser;
     }
 
     public async Task ExecuteAsync(string ticker, decimal precoMedio, decimal quantidade, TipoAtivo tipo)
@@ -42,10 +45,14 @@ public class AddAtivoService
         if (quote is null)
             throw new TickerInvalidoException(tickerNormalizado);
 
-        var ativo = new Ativo(tickerNormalizado, quote.Nome, tipo);
+        var usuarioId = _currentUser.UsuarioId
+            ?? throw new InvalidOperationException("Usuário autenticado não encontrado.");
+
+        var ativo = new Ativo(usuarioId, tickerNormalizado, quote.Nome, tipo);
         await _ativoRepository.AddAsync(ativo);
 
         var operacaoInicial = new Operacao(
+            usuarioId,
             ativo.Id,
             Domain.Enums.TipoOperacao.Compra,
             DateTime.UtcNow,

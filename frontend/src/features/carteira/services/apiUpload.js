@@ -1,3 +1,5 @@
+import { getAuthToken } from '../../auth/services/authToken'
+
 const API_BASE = import.meta.env.VITE_API_URL ?? '/api'
 
 async function extrairMensagemErro(resposta, texto) {
@@ -14,9 +16,11 @@ async function extrairMensagemErro(resposta, texto) {
 export async function apiUpload(caminho, arquivo, nomeCampo = 'arquivo') {
   const dados = new FormData()
   dados.append(nomeCampo, arquivo)
+  const token = getAuthToken()
 
   const resposta = await fetch(`${API_BASE}${caminho}`, {
     method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     body: dados,
   })
 

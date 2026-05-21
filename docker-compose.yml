@@ -38,6 +38,9 @@ services:
       Brapi__CacheMinutos: 30
       Brapi__HistoricoCacheHoras: 24
       Database__AutoMigrate: "true"
+      Jwt__Key: ${JWT_KEY:-dev-only-change-this-secret-key-with-at-least-32-characters}
+      Jwt__Issuer: CarteiraPro
+      Jwt__Audience: CarteiraPro
       Swagger__Enabled: "true"
       Cors__Origins__0: http://localhost:5173
       Cors__Origins__1: http://127.0.0.1:5173

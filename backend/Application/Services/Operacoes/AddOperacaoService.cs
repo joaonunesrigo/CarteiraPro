@@ -9,11 +9,16 @@ public class AddOperacaoService
 {
     private readonly IAtivoRepository _ativoRepository;
     private readonly IOperacaoRepository _operacaoRepository;
+    private readonly ICurrentUser _currentUser;
 
-    public AddOperacaoService(IAtivoRepository ativoRepository, IOperacaoRepository operacaoRepository)
+    public AddOperacaoService(
+        IAtivoRepository ativoRepository,
+        IOperacaoRepository operacaoRepository,
+        ICurrentUser currentUser)
     {
         _ativoRepository = ativoRepository;
         _operacaoRepository = operacaoRepository;
+        _currentUser = currentUser;
     }
 
     public async Task ExecuteAsync(
@@ -29,7 +34,10 @@ public class AddOperacaoService
         if (ativo is null)
             throw new AtivoNaoEncontradoException(ativoId);
 
-        var operacao = new Operacao(ativoId, tipo, data, quantidade, precoUnitario, taxas, observacao);
+        var usuarioId = _currentUser.UsuarioId
+            ?? throw new InvalidOperationException("Usuário autenticado não encontrado.");
+
+        var operacao = new Operacao(usuarioId, ativoId, tipo, data, quantidade, precoUnitario, taxas, observacao);
         var operacoes = (await _operacaoRepository.GetByAtivoIdAsync(ativoId)).Append(operacao);
 
         CalcularPosicaoAtivoService.Calcular(operacoes);

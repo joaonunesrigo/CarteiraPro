@@ -2,9 +2,17 @@ using Domain.Enums;
 
 namespace Domain.Entities;
 
-public class Provento(Guid? ativoId, string ticker, decimal valorPorCota, decimal quantidade, DateTime dataPagamento, TipoProvento tipo)
+public class Provento(
+    Guid usuarioId,
+    Guid? ativoId,
+    string ticker,
+    decimal valorPorCota,
+    decimal quantidade,
+    DateTime dataPagamento,
+    TipoProvento tipo)
 {
     public Guid Id { get; private set; } = Guid.NewGuid();
+    public Guid UsuarioId { get; private set; } = usuarioId;
     public Guid? AtivoId { get; private set; } = ativoId;
     public string Ticker { get; private set; } = ticker.Trim().ToUpperInvariant();
     public decimal ValorPorCota { get; private set; } = valorPorCota;

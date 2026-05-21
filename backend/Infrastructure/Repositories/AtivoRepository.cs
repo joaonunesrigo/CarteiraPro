@@ -8,27 +8,34 @@ namespace Infrastructure.Repositories;
 public class AtivoRepository : IAtivoRepository
 {
     private readonly AppDbContext _context;
+    private readonly ICurrentUser _currentUser;
 
-    public AtivoRepository(AppDbContext context)
+    public AtivoRepository(AppDbContext context, ICurrentUser currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
+
+    private Guid UsuarioId => _currentUser.UsuarioId
+        ?? throw new InvalidOperationException("Usuário autenticado não encontrado.");
 
     public async Task<Ativo?> GetByIdAsync(Guid id)
     {
-        return await _context.Ativos.FindAsync(id);
+        return await _context.Ativos.FirstOrDefaultAsync(a => a.Id == id && a.UsuarioId == UsuarioId);
     }
 
     public async Task<Ativo?> GetByTickerAsync(string ticker)
     {
         var tickerNormalizado = ticker.Trim().ToUpper();
         return await _context.Ativos
-            .FirstOrDefaultAsync(a => a.Ticker == tickerNormalizado);
+            .FirstOrDefaultAsync(a => a.UsuarioId == UsuarioId && a.Ticker == tickerNormalizado);
     }
 
     public async Task<IEnumerable<Ativo>> GetAllAsync()
     {
-        return await _context.Ativos.ToListAsync();
+        return await _context.Ativos
+            .Where(a => a.UsuarioId == UsuarioId)
+            .ToListAsync();
     }
 
     public async Task AddAsync(Ativo ativo)
@@ -55,7 +62,9 @@ public class AtivoRepository : IAtivoRepository
 
     public async Task<int> DeleteAllAsync()
     {
-        var ativos = await _context.Ativos.ToListAsync();
+        var ativos = await _context.Ativos
+            .Where(a => a.UsuarioId == UsuarioId)
+            .ToListAsync();
         if (ativos.Count == 0)
             return 0;
 

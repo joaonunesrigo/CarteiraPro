@@ -1,7 +1,9 @@
 using Domain.Interfaces;
+using Infrastructure.DataBase;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.ExternalServices;
 
@@ -33,11 +35,12 @@ public class CotacoesRefreshService : BackgroundService
         try
         {
             using var scope = _scopeFactory.CreateScope();
-            var ativoRepository = scope.ServiceProvider.GetRequiredService<IAtivoRepository>();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var cotacoesCache = scope.ServiceProvider.GetRequiredService<ICotacoesCache>();
 
-            var tickers = (await ativoRepository.GetAllAsync())
+            var tickers = (await db.Ativos
                 .Select(ativo => ativo.Ticker)
+                .ToListAsync(cancellationToken))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
 

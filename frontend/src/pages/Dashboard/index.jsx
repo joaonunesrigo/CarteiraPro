@@ -12,7 +12,7 @@ import { useProventos } from '../../features/proventos/hooks/useProventos'
 import { ABA_INICIAL_DASHBOARD, ABAS_DASHBOARD } from './dashboardAbas.constants'
 import { Dashboard } from './Dashboard'
 
-export default function DashboardPage() {
+export default function DashboardPage({ usuario, logout }) {
   const { mostrarToast } = useToastContext()
   const { solicitarConfirmacao } = useConfirmDialogContext()
   const { abaAtiva, mudarAba } = useTabs(ABA_INICIAL_DASHBOARD)
@@ -61,6 +61,8 @@ export default function DashboardPage() {
         abrir: () => setImportadorB3Aberto(true),
         fechar: () => setImportadorB3Aberto(false),
       }}
+      usuario={usuario}
+      logout={logout}
     />
   )
 }

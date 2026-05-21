@@ -44,7 +44,13 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Tipo")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId", "Ticker")
+                        .IsUnique();
 
                     b.ToTable("Ativos");
                 });
@@ -83,9 +89,14 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Tipo")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AtivoId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Operacoes");
                 });
@@ -114,13 +125,59 @@ namespace Infrastructure.Migrations
                     b.Property<int>("Tipo")
                         .HasColumnType("integer");
 
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
+
                     b.Property<decimal>("ValorPorCota")
                         .HasPrecision(18, 6)
                         .HasColumnType("numeric(18,6)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UsuarioId");
+
                     b.ToTable("Proventos");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Usuario", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(180)
+                        .HasColumnType("character varying(180)");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<string>("SenhaHash")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Usuarios");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Ativo", b =>
+                {
+                    b.HasOne("Domain.Entities.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entities.Operacao", b =>
@@ -128,6 +185,21 @@ namespace Infrastructure.Migrations
                     b.HasOne("Domain.Entities.Ativo", null)
                         .WithMany()
                         .HasForeignKey("AtivoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.Provento", b =>
+                {
+                    b.HasOne("Domain.Entities.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

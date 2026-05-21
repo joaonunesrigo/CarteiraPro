@@ -1,3 +1,5 @@
+import { getAuthToken } from '../../auth/services/authToken'
+
 const API_BASE = import.meta.env.VITE_API_URL ?? '/api'
 
 async function extrairMensagemErro(resposta, texto) {
@@ -12,10 +14,16 @@ async function extrairMensagemErro(resposta, texto) {
 }
 
 export async function apiClient(caminho, opcoes = {}) {
-  const { signal, ...resto } = opcoes
+  const { signal, auth = true, ...resto } = opcoes
+  const token = auth ? getAuthToken() : null
+  const headers = { 'Content-Type': 'application/json', ...resto.headers }
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
 
   const resposta = await fetch(`${API_BASE}${caminho}`, {
-    headers: { 'Content-Type': 'application/json', ...resto.headers },
+    headers,
     signal,
     ...resto,
   })

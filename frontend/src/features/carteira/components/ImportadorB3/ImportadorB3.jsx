@@ -1,6 +1,7 @@
 import { Button } from '../../../../components/Button'
 import { Select } from '../../../../components/Select'
 import { TIPOS_ATIVO } from '../../constants/tiposAtivo'
+import { precoMedioValido } from '../../hooks/useImportarB3'
 
 export function ImportadorB3({
   linhas,
@@ -16,6 +17,10 @@ export function ImportadorB3({
   limparPreview,
   confirmarImportacao,
 }) {
+  const linhasComPmPendente = linhas.filter(
+    (linha) => linha.selecionado && !linha.jaCadastrado && !precoMedioValido(linha.precoMedio),
+  ).length
+
   return (
     <div className="space-y-4">
       <p className="text-sm leading-relaxed text-slate-400">
@@ -86,7 +91,10 @@ export function ImportadorB3({
                 </tr>
               </thead>
               <tbody>
-                {linhas.map((linha) => (
+                {linhas.map((linha) => {
+                  const pmPendente =
+                    linha.selecionado && !linha.jaCadastrado && !precoMedioValido(linha.precoMedio)
+                  return (
                   <tr key={linha.id} className={`border-b border-slate-800 ${linha.jaCadastrado ? 'opacity-50' : ''}`}>
                     <td className="px-3 py-2">
                       <input
@@ -107,11 +115,15 @@ export function ImportadorB3({
                         type="number"
                         step="0.01"
                         min="0"
+                        required
+                        aria-invalid={pmPendente || undefined}
                         disabled={linha.jaCadastrado}
                         value={linha.precoMedio}
                         onChange={(e) => atualizarLinha(linha.id, 'precoMedio', e.target.value)}
                         placeholder="0,00"
-                        className="w-24 rounded border border-slate-600 bg-slate-900 px-2 py-1 text-white disabled:opacity-50"
+                        className={`w-24 rounded border bg-slate-900 px-2 py-1 text-white disabled:opacity-50 ${
+                          pmPendente ? 'border-red-500 focus:border-red-500' : 'border-slate-600'
+                        }`}
                       />
                     </td>
                     <td className="px-3 py-2 text-slate-500">
@@ -137,13 +149,23 @@ export function ImportadorB3({
                     </td>
                     <td className="px-3 py-2 text-xs text-slate-500">{linha.origemAba}</td>
                   </tr>
-                ))}
+                  )
+                })}
               </tbody>
             </table>
           </div>
 
-          <div className="mt-4 flex justify-end">
-            <Button type="button" disabled={importando || totalSelecionadas === 0} onClick={confirmarImportacao}>
+          <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
+            {linhasComPmPendente > 0 && (
+              <p className="text-xs text-red-400" role="alert">
+                Informe o preço médio de {linhasComPmPendente} ativo(s) selecionado(s) antes de importar.
+              </p>
+            )}
+            <Button
+              type="button"
+              disabled={importando || totalSelecionadas === 0 || linhasComPmPendente > 0}
+              onClick={confirmarImportacao}
+            >
               {importando ? 'Importando…' : `Importar ${totalSelecionadas} ativo(s)`}
             </Button>
           </div>

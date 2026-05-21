@@ -1,0 +1,36 @@
+# Blueprint do Render — API .NET 10 do CarteiraPro
+# Postgres: usar Neon (https://neon.tech) e colar a connection string em
+# ConnectionStrings__DefaultConnection nas variaveis do servico (sync: false abaixo).
+#
+# Importar: New + → Blueprint → conectar repositorio → este arquivo e detectado.
+
+services:
+  - type: web
+    name: carteirapro-api
+    runtime: docker
+    plan: free
+    region: oregon
+    rootDir: backend
+    dockerfilePath: API/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: Database__AutoMigrate
+        value: "true"
+      - key: Jwt__Issuer
+        value: CarteiraPro
+      - key: Jwt__Audience
+        value: CarteiraPro
+      - key: Swagger__Enabled
+        value: "true"
+      # Definir no dashboard Render (Settings -> Environment):
+      - key: ConnectionStrings__DefaultConnection
+        sync: false
+      - key: Jwt__Key
+        sync: false
+      - key: Brapi__Token
+        sync: false
+      - key: Cors__Origins__0
+        sync: false

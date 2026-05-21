@@ -2,6 +2,12 @@ import { useImportarAtivosMutation } from '../mutations/carteiraMutations'
 import { carteiraApi } from '../services/carteira.api'
 import { useCarteiraStore } from '../stores/carteiraStore'
 
+export function precoMedioValido(valor) {
+  if (valor === '' || valor === null || valor === undefined) return false
+  const numero = Number(valor)
+  return Number.isFinite(numero) && numero > 0
+}
+
 function criarLinhaPreview(dados, indice) {
   return {
     id: `${dados.ticker}-${indice}`,
@@ -82,18 +88,23 @@ export function useImportarB3(mostrarToast, aoConcluir) {
   async function confirmarImportacao() {
     const selecionadas = linhas.filter((l) => l.selecionado && !l.jaCadastrado)
 
-    const invalidas = selecionadas.filter((l) => {
-      const pm = Number(l.precoMedio)
-      return !l.ticker || l.quantidade <= 0 || Number.isNaN(pm) || pm < 0
-    })
-
     if (selecionadas.length === 0) {
       mostrarToast?.('Selecione ao menos um ativo para importar.', 'erro')
       return
     }
 
+    const semPrecoMedio = selecionadas.filter((l) => !precoMedioValido(l.precoMedio))
+    if (semPrecoMedio.length > 0) {
+      mostrarToast?.(
+        `Informe o preço médio dos ativos selecionados (${semPrecoMedio.length} pendente(s)).`,
+        'erro',
+      )
+      return
+    }
+
+    const invalidas = selecionadas.filter((l) => !l.ticker || l.quantidade <= 0)
     if (invalidas.length > 0) {
-      mostrarToast?.('Preencha o preço médio de todos os ativos selecionados.', 'erro')
+      mostrarToast?.('Há linhas inválidas entre os ativos selecionados.', 'erro')
       return
     }
 

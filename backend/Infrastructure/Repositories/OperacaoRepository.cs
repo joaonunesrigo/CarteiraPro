@@ -8,21 +8,26 @@ namespace Infrastructure.Repositories;
 public class OperacaoRepository : IOperacaoRepository
 {
     private readonly AppDbContext _context;
+    private readonly ICurrentUser _currentUser;
 
-    public OperacaoRepository(AppDbContext context)
+    public OperacaoRepository(AppDbContext context, ICurrentUser currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
+
+    private Guid UsuarioId => _currentUser.UsuarioId
+        ?? throw new InvalidOperationException("Usuário autenticado não encontrado.");
 
     public async Task<Operacao?> GetByIdAsync(Guid id)
     {
-        return await _context.Operacoes.FindAsync(id);
+        return await _context.Operacoes.FirstOrDefaultAsync(o => o.Id == id && o.UsuarioId == UsuarioId);
     }
 
     public async Task<IEnumerable<Operacao>> GetByAtivoIdAsync(Guid ativoId)
     {
         return await _context.Operacoes
-            .Where(o => o.AtivoId == ativoId)
+            .Where(o => o.UsuarioId == UsuarioId && o.AtivoId == ativoId)
             .OrderBy(o => o.Data)
             .ThenBy(o => o.DataCadastro)
             .ThenBy(o => o.Id)
@@ -32,6 +37,7 @@ public class OperacaoRepository : IOperacaoRepository
     public async Task<IEnumerable<Operacao>> GetAllAsync()
     {
         return await _context.Operacoes
+            .Where(o => o.UsuarioId == UsuarioId)
             .OrderBy(o => o.Data)
             .ThenBy(o => o.DataCadastro)
             .ThenBy(o => o.Id)

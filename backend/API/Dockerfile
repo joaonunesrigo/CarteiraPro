@@ -4,7 +4,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 WORKDIR /app
 EXPOSE 8080
-ENV ASPNETCORE_URLS=http://+:8080
+# PORT pode ser injetada pelo host (Render, Fly, Railway). Default = 8080.
+ENV PORT=8080
 USER root
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
@@ -31,5 +32,5 @@ FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 HEALTHCHECK --interval=10s --timeout=5s --retries=10 --start-period=20s \
-    CMD curl -f http://localhost:8080/health || exit 1
-ENTRYPOINT ["dotnet", "API.dll"]
+    CMD curl -f http://localhost:${PORT:-8080}/health || exit 1
+ENTRYPOINT ["sh", "-c", "dotnet API.dll --urls http://+:${PORT:-8080}"]

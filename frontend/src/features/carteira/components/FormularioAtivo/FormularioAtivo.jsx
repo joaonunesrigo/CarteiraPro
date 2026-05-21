@@ -5,7 +5,7 @@ import { TIPOS_ATIVO } from '../../constants/tiposAtivo'
 
 export function FormularioAtivo({ formulario, errosCampos, atualizarCampo, enviando, enviarFormulario }) {
   return (
-    <form noValidate onSubmit={enviarFormulario} className="grid gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-5">
+    <form noValidate onSubmit={enviarFormulario} className="grid gap-x-4 gap-y-8 pb-7 sm:grid-cols-2 lg:grid-cols-5">
       <Input
         rotulo="Ticker"
         id="ticker"

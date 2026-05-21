@@ -96,6 +96,19 @@ npm run dev
 | --- | --- | --- |
 | `POSTGRES_PASSWORD` | Senha do usuário `postgres` no container | `postgres` |
 | `BRAPI_TOKEN` | Token usado para consultar cotações na Brapi | vazio |
+| `JWT_KEY` | Chave para assinar tokens JWT | ver `.env.example` |
+
+## Deploy de testes
+
+Stack gratuito: Neon (Postgres) + Render (API) + Vercel (frontend) — 100% grátis, sem cartão.
+
+Guia passo a passo: **[docs/DEPLOY-FREE.md](docs/DEPLOY-FREE.md)**. Blueprint pronto em [`render.yaml`](render.yaml) e config Vercel em [`frontend/vercel.json`](frontend/vercel.json).
+
+Validação local dos builds Docker:
+
+```powershell
+.\scripts\validate-build.ps1
+```
 
 ## Observações
 

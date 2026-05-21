@@ -8,11 +8,16 @@ public class ImportarProventosB3Service
 {
     private readonly IAtivoRepository _ativoRepository;
     private readonly IProventoRepository _proventoRepository;
+    private readonly ICurrentUser _currentUser;
 
-    public ImportarProventosB3Service(IAtivoRepository ativoRepository, IProventoRepository proventoRepository)
+    public ImportarProventosB3Service(
+        IAtivoRepository ativoRepository,
+        IProventoRepository proventoRepository,
+        ICurrentUser currentUser)
     {
         _ativoRepository = ativoRepository;
         _proventoRepository = proventoRepository;
+        _currentUser = currentUser;
     }
 
     public async Task<ImportarProventosResultadoDto> ExecuteAsync(
@@ -22,6 +27,8 @@ public class ImportarProventosB3Service
         var erros = new List<ErroImportacaoDto>();
         var importados = 0;
         var ignorados = 0;
+        var usuarioId = _currentUser.UsuarioId
+            ?? throw new InvalidOperationException("Usuário autenticado não encontrado.");
 
         foreach (var item in proventos)
         {
@@ -54,6 +61,7 @@ public class ImportarProventosB3Service
             }
 
             var provento = new Provento(
+                usuarioId,
                 ativo?.Id,
                 ticker,
                 valorPorCota,

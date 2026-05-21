@@ -9,28 +9,35 @@ namespace Infrastructure.Repositories;
 public class ProventoRepository : IProventoRepository
 {
     private readonly AppDbContext _context;
+    private readonly ICurrentUser _currentUser;
 
-    public ProventoRepository(AppDbContext context)
+    public ProventoRepository(AppDbContext context, ICurrentUser currentUser)
     {
         _context = context;
+        _currentUser = currentUser;
     }
+
+    private Guid UsuarioId => _currentUser.UsuarioId
+        ?? throw new InvalidOperationException("Usuário autenticado não encontrado.");
 
     public async Task<Provento?> GetByIdAsync(Guid id)
     {
-        return await _context.Proventos.FindAsync(id);
+        return await _context.Proventos.FirstOrDefaultAsync(p => p.Id == id && p.UsuarioId == UsuarioId);
     }
 
     public async Task<IEnumerable<Provento>> GetByAtivoIdAsync(Guid ativoId)
     {
         return await _context.Proventos
-            .Where(p => p.AtivoId == ativoId)
+            .Where(p => p.UsuarioId == UsuarioId && p.AtivoId == ativoId)
             .OrderByDescending(p => p.DataPagamento)
             .ToListAsync();
     }
 
     public async Task<IEnumerable<Provento>> GetAllAsync(Guid? ativoId = null, DateTime? dataInicio = null, DateTime? dataFim = null)
     {
-        var query = _context.Proventos.AsQueryable();
+        var query = _context.Proventos
+            .Where(p => p.UsuarioId == UsuarioId)
+            .AsQueryable();
 
         if (ativoId.HasValue)
             query = query.Where(p => p.AtivoId == ativoId.Value);
@@ -59,7 +66,8 @@ public class ProventoRepository : IProventoRepository
         const decimal tolerancia = 0.0000005m;
 
         return await _context.Proventos.AnyAsync(p =>
-            p.Ticker == tickerNormalizado
+            p.UsuarioId == UsuarioId
+            && p.Ticker == tickerNormalizado
             && p.DataPagamento.Date == data
             && p.Quantidade == quantidade
             && p.Tipo == tipo
