@@ -7,16 +7,16 @@ namespace Application.Services.Carteira;
 public class GetRentabilidadeAtivosService
 {
     private readonly IAtivoRepository _ativoRepository;
-    private readonly IBrapiService _brapiService;
+    private readonly ICotacoesCache _cotacoesCache;
     private readonly CalcularPosicaoAtivoService _calcularPosicao;
 
     public GetRentabilidadeAtivosService(
         IAtivoRepository ativoRepository,
-        IBrapiService brapiService,
+        ICotacoesCache cotacoesCache,
         CalcularPosicaoAtivoService calcularPosicao)
     {
         _ativoRepository = ativoRepository;
-        _brapiService = brapiService;
+        _cotacoesCache = cotacoesCache;
         _calcularPosicao = calcularPosicao;
     }
 
@@ -26,7 +26,7 @@ public class GetRentabilidadeAtivosService
         if (ativos.Count == 0)
             return [];
 
-        var cotacoes = await _brapiService.ObterQuotesAsync(ativos.Select(a => a.Ticker));
+        var cotacoes = await _cotacoesCache.ObterQuotesAsync(ativos.Select(a => a.Ticker));
         var posicoes = await _calcularPosicao.ExecuteAsync(ativos);
         var resultado = new List<RentabilidadeDto>(ativos.Count);
 
@@ -59,6 +59,7 @@ public class GetRentabilidadeAtivosService
                 ValorAtual = valorAtual,
                 RentabilidadeReais = rentabilidadeReais,
                 RentabilidadePercent = Math.Round(rentabilidadePercent, 2),
+                CotacaoAtualizadaEm = quote?.RegularMarketTime,
             });
         }
 

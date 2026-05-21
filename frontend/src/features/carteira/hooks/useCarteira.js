@@ -6,6 +6,18 @@ import { montarResumoCarteira } from '../utils/montarResumoCarteira'
 import { normalizarListaRentabilidade } from '../utils/normalizarRentabilidade'
 import { useCarteiraQuery } from '../queries/carteiraQueries'
 
+function obterUltimaAtualizacaoCotacao(linhasAtivos) {
+  const timestamps = linhasAtivos
+    .map((ativo) => ativo.cotacaoAtualizadaEm)
+    .filter(Boolean)
+    .map((data) => new Date(data).getTime())
+    .filter((timestamp) => !Number.isNaN(timestamp))
+
+  if (timestamps.length === 0) return null
+
+  return new Date(Math.max(...timestamps)).toISOString()
+}
+
 export function useCarteira() {
   const query = useCarteiraQuery()
   const dados = useMemo(() => normalizarListaRentabilidade(query.data ?? []), [query.data])
@@ -14,6 +26,7 @@ export function useCarteira() {
 
   const cartoesResumo = montarCartoesResumo(resumo)
   const dadosGraficos = useMemo(() => montarDadosGraficos(linhasAtivos), [linhasAtivos])
+  const cotacaoAtualizadaEm = useMemo(() => obterUltimaAtualizacaoCotacao(linhasAtivos), [linhasAtivos])
 
   return {
     resumo,
@@ -22,6 +35,7 @@ export function useCarteira() {
     dadosGraficos,
     carregando: query.isLoading,
     erro: query.error?.message ?? null,
+    cotacaoAtualizadaEm,
     recarregar: query.refetch,
   }
 }

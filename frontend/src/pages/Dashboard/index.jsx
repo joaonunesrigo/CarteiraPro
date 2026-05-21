@@ -14,7 +14,7 @@ export default function DashboardPage() {
   const { mostrarToast } = useToastContext()
   const { solicitarConfirmacao } = useConfirmDialogContext()
   const { abaAtiva, mudarAba } = useTabs(ABA_INICIAL_DASHBOARD)
-  const { cartoesResumo, linhasAtivos, dadosGraficos, carregando, erro } = useCarteira()
+  const { cartoesResumo, linhasAtivos, dadosGraficos, carregando, erro, cotacaoAtualizadaEm } = useCarteira()
 
   const tickersCadastrados = linhasAtivos.map((linha) => linha.ticker)
   const formularioAtivo = useAdicionarAtivo(tickersCadastrados, mostrarToast)
@@ -30,6 +30,7 @@ export default function DashboardPage() {
       abaAtiva={abaAtiva}
       onMudarAba={mudarAba}
       cartoesResumo={cartoesResumo}
+      cotacaoAtualizadaEm={cotacaoAtualizadaEm}
       linhasAtivos={linhasAtivos}
       dadosGraficos={dadosGraficos}
       carregando={carregando}

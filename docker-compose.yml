@@ -35,6 +35,7 @@ services:
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=carteirapro;Username=postgres;Password=${POSTGRES_PASSWORD:-postgres}
       Brapi__Token: ${BRAPI_TOKEN:-}
+      Brapi__CacheMinutos: 30
       Database__AutoMigrate: "true"
       Swagger__Enabled: "true"
       Cors__Origins__0: http://localhost:5173

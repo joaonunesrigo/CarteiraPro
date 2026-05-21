@@ -5,17 +5,20 @@ namespace Application.Services.Ativos;
 
 public class GetCotacaoAtivoService
 {
-    private readonly IBrapiService _brapiService;
+    private readonly ICotacoesCache _cotacoesCache;
 
-    public GetCotacaoAtivoService(IBrapiService brapiService)
+    public GetCotacaoAtivoService(ICotacoesCache cotacoesCache)
     {
-        _brapiService = brapiService;
+        _cotacoesCache = cotacoesCache;
     }
 
     public async Task<decimal> ExecuteAsync(string ticker)
     {
         var tickerNormalizado = ticker.Trim().ToUpper();
-        var quote = await _brapiService.ObterQuoteAsync(tickerNormalizado);
+        var cotacoes = await _cotacoesCache.ObterQuotesAsync([tickerNormalizado]);
+        var quote = cotacoes.TryGetValue(tickerNormalizado, out var cotacao)
+            ? cotacao
+            : null;
 
         if (quote is null)
             throw new TickerInvalidoException(tickerNormalizado);

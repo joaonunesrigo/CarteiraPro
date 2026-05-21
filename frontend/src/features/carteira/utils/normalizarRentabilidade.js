@@ -10,6 +10,7 @@ export function normalizarRentabilidade(item) {
     valorAtual: Number(item.valorAtual ?? item.ValorAtual ?? 0),
     rentabilidadeReais: Number(item.rentabilidadeReais ?? item.RentabilidadeReais ?? 0),
     rentabilidadePercent: Number(item.rentabilidadePercent ?? item.RentabilidadePercent ?? 0),
+    cotacaoAtualizadaEm: item.cotacaoAtualizadaEm ?? item.CotacaoAtualizadaEm ?? null,
   }
 }
 

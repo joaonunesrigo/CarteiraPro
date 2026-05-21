@@ -14,4 +14,5 @@ public class RentabilidadeDto
     public decimal ValorAtual { get; set; }
     public decimal RentabilidadePercent { get; set; }
     public decimal RentabilidadeReais { get; set; }
+    public DateTime? CotacaoAtualizadaEm { get; set; }
 }

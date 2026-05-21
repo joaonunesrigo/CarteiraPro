@@ -158,6 +158,23 @@ public class BrapiService : IBrapiService
         {
             Nome = nome,
             Cotacao = precoElement.GetDecimal(),
+            RegularMarketTime = ObterRegularMarketTime(item),
         };
+    }
+
+    private static DateTime? ObterRegularMarketTime(JsonElement item)
+    {
+        if (!item.TryGetProperty("regularMarketTime", out var marketTime))
+            return null;
+
+        if (marketTime.ValueKind == JsonValueKind.String
+            && DateTime.TryParse(marketTime.GetString(), out var data))
+            return DateTime.SpecifyKind(data, DateTimeKind.Utc);
+
+        if (marketTime.ValueKind == JsonValueKind.Number
+            && marketTime.TryGetInt64(out var timestamp))
+            return DateTimeOffset.FromUnixTimeSeconds(timestamp).UtcDateTime;
+
+        return null;
     }
 }

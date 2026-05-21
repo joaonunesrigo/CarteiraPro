@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import { carteiraApi } from '../services/carteira.api'
+import { mercadoAberto } from '../utils/mercadoAberto'
 
 export const carteiraQueryKey = ['carteira']
+const INTERVALO_COTACOES_PREGAO = 30 * 60 * 1000
 
 export function operacoesAtivoQueryKey(ativoId) {
   return ['ativos', ativoId, 'operacoes']
@@ -11,6 +13,8 @@ export function useCarteiraQuery() {
   return useQuery({
     queryKey: carteiraQueryKey,
     queryFn: carteiraApi.obterRentabilidade,
+    refetchInterval: () => (mercadoAberto() ? INTERVALO_COTACOES_PREGAO : false),
+    refetchIntervalInBackground: false,
   })
 }
 

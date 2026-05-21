@@ -26,6 +26,8 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod());
 });
 
+builder.Services.AddMemoryCache();
+
 // Banco de dados
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -60,6 +62,8 @@ builder.Services.AddScoped<ImportarProventosB3Service>();
 
 // External Services
 builder.Services.AddHttpClient<IBrapiService, BrapiService>();
+builder.Services.AddSingleton<ICotacoesCache, CotacoesCache>();
+builder.Services.AddHostedService<CotacoesRefreshService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

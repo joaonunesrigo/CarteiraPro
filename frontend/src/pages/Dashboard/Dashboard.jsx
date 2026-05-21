@@ -13,6 +13,7 @@ export function Dashboard({
   abaAtiva,
   onMudarAba,
   cartoesResumo,
+  cotacaoAtualizadaEm,
   linhasAtivos,
   dadosGraficos,
   carregando,
@@ -27,7 +28,7 @@ export function Dashboard({
   const paineis = {
     carteira: (
       <>
-        <CarteiraSummary cartoes={cartoesResumo} />
+        <CarteiraSummary cartoes={cartoesResumo} cotacaoAtualizadaEm={cotacaoAtualizadaEm} />
         <ImportadorB3 {...importadorB3} />
         <FormularioAtivo {...formularioAtivo} />
         <AtivoTable
