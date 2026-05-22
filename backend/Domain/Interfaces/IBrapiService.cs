@@ -8,5 +8,6 @@ public interface IBrapiService
     Task<IReadOnlyDictionary<string, BrapiQuote>> ObterQuotesAsync(IEnumerable<string> tickers);
     Task<decimal> GetCotacaoAsync(string ticker);
     Task<string> GetNomeAtivoAsync(string ticker);
+    Task<string?> ObterSetorAsync(string ticker);
     Task<IReadOnlyList<HistoricoCotacaoMensal>> ObterHistoricoMensalAsync(string ticker, int meses);
 }

@@ -1,7 +1,37 @@
-import { CORES_GRAFICO, CORES_TIPO_ATIVO } from '../constants/graficos.constants'
+import { COR_SEM_SETOR, CORES_GRAFICO, CORES_TIPO_ATIVO } from '../constants/graficos.constants'
 import { TIPOS_ATIVO } from '../constants/tiposAtivo'
 
 const ROTULO_TIPO_ATIVO = Object.fromEntries(TIPOS_ATIVO.map((t) => [t.valor, t.rotulo]))
+const SETOR_NAO_INFORMADO = 'Não informado'
+
+function arredondarPercentual(valor, total) {
+  return total > 0 ? Math.round((valor / total) * 1000) / 10 : 0
+}
+
+function agruparPorSetor(linhas) {
+  if (linhas.length === 0) return []
+
+  const totalGrupo = linhas.reduce((soma, ativo) => soma + Number(ativo.valorAtual), 0)
+  const grupos = new Map()
+
+  for (const ativo of linhas) {
+    const setor = ativo.setor?.trim() || SETOR_NAO_INFORMADO
+    const grupo = grupos.get(setor) ?? { valor: 0, ativos: [] }
+    grupo.valor += Number(ativo.valorAtual)
+    grupo.ativos.push({ ticker: ativo.ticker, valor: Number(ativo.valorAtual) })
+    grupos.set(setor, grupo)
+  }
+
+  return [...grupos.entries()]
+    .sort((a, b) => b[1].valor - a[1].valor)
+    .map(([setor, grupo], indice) => ({
+      setor,
+      valor: grupo.valor,
+      percentual: arredondarPercentual(grupo.valor, totalGrupo),
+      cor: setor === SETOR_NAO_INFORMADO ? COR_SEM_SETOR : CORES_GRAFICO[indice % CORES_GRAFICO.length],
+      ativos: grupo.ativos.sort((a, b) => b.valor - a.valor),
+    }))
+}
 
 export function montarDadosGraficos(linhas) {
   if (!linhas?.length) {
@@ -9,6 +39,8 @@ export function montarDadosGraficos(linhas) {
       temDados: false,
       alocacao: [],
       alocacaoPorTipo: [],
+      alocacaoPorSetorAcoes: [],
+      alocacaoPorSetorFiis: [],
       comparativo: [],
       rentabilidade: [],
     }
@@ -19,7 +51,7 @@ export function montarDadosGraficos(linhas) {
   const alocacao = linhas.map((ativo, indice) => ({
     ticker: ativo.ticker,
     valor: Number(ativo.valorAtual),
-    percentual: totalAtual > 0 ? Math.round((Number(ativo.valorAtual) / totalAtual) * 1000) / 10 : 0,
+    percentual: arredondarPercentual(Number(ativo.valorAtual), totalAtual),
     cor: CORES_GRAFICO[indice % CORES_GRAFICO.length],
   }))
 
@@ -34,10 +66,15 @@ export function montarDadosGraficos(linhas) {
       tipo: Number(tipo),
       rotulo: ROTULO_TIPO_ATIVO[Number(tipo)] ?? 'Outros',
       valor,
-      percentual: totalAtual > 0 ? Math.round((valor / totalAtual) * 1000) / 10 : 0,
-      cor: CORES_TIPO_ATIVO[Number(tipo)] ?? '#94a3b8',
+      percentual: arredondarPercentual(valor, totalAtual),
+      cor: CORES_TIPO_ATIVO[Number(tipo)] ?? COR_SEM_SETOR,
     }))
     .sort((a, b) => b.valor - a.valor)
+
+  const acoes = linhas.filter((ativo) => Number(ativo.tipo ?? 0) === 0)
+  const fiis = linhas.filter((ativo) => Number(ativo.tipo ?? 0) === 1)
+  const alocacaoPorSetorAcoes = agruparPorSetor(acoes)
+  const alocacaoPorSetorFiis = agruparPorSetor(fiis)
 
   const comparativo = linhas.map((ativo) => ({
     ticker: ativo.ticker,
@@ -56,6 +93,8 @@ export function montarDadosGraficos(linhas) {
     temDados: true,
     alocacao,
     alocacaoPorTipo,
+    alocacaoPorSetorAcoes,
+    alocacaoPorSetorFiis,
     comparativo,
     rentabilidade,
   }

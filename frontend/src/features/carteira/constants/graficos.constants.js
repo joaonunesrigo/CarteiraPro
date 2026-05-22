@@ -5,6 +5,8 @@ export const COR_NEGATIVA = '#f87171'
 export const COR_INVESTIDO = '#64748b'
 export const COR_ATUAL = '#8b5cf6'
 
+export const COR_SEM_SETOR = '#94a3b8'
+
 export const CORES_TIPO_ATIVO = {
   0: '#8b5cf6',
   1: '#22d3ee',

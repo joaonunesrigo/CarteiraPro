@@ -33,6 +33,7 @@ public class AppDbContext : DbContext
             entity.Property(a => a.CarteiraId).IsRequired();
             entity.Property(a => a.Ticker).IsRequired().HasMaxLength(10);
             entity.Property(a => a.Nome).IsRequired().HasMaxLength(100);
+            entity.Property(a => a.Setor).HasMaxLength(100);
             entity.HasIndex(a => new { a.CarteiraId, a.Ticker }).IsUnique();
             entity.HasOne<Usuario>()
                 .WithMany()
