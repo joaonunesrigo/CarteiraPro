@@ -152,7 +152,10 @@ export function Dashboard({
         {erro && (
           <Alert className="mb-8">
             {erro}
-            <span className="mt-1 block text-sm text-red-400/80">Verifique se a API está rodando em http://localhost:5122</span>
+            <span className="mt-1 block text-sm text-red-400/80">
+              Verifique se a API está acessível em{' '}
+              {import.meta.env.VITE_API_URL || 'http://localhost:5122/api'} (variável VITE_API_URL no Vercel).
+            </span>
           </Alert>
         )}
 

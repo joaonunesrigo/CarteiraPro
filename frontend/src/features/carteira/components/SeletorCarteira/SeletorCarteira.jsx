@@ -29,7 +29,7 @@ export function SeletorCarteira({ carteiras }) {
           value={carteiraAtivaId ?? ''}
           onChange={(evento) => selecionarCarteira(evento.target.value)}
           disabled={desabilitado}
-          className="min-w-[200px] border-transparent bg-transparent text-sm shadow-none focus:border-violet-500 sm:min-w-[220px]"
+          className="min-w-[200px] border-violet-500/40 bg-violet-500/10 text-sm font-medium text-violet-100 shadow-none hover:bg-violet-500/15 focus:border-violet-400 focus:ring-violet-400/30 sm:min-w-[220px]"
         >
           {lista.length === 0 && <option value="">Nenhuma carteira</option>}
           {lista.map((carteira) => (
