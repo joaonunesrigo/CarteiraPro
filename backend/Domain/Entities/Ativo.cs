@@ -23,5 +23,11 @@ public class Ativo
     public string Ticker { get; private set; } = string.Empty;
     public string Nome { get; private set; } = string.Empty;
     public TipoAtivo Tipo { get; private set; }
+    public string? Setor { get; private set; }
     public DateTime DataCadastro { get; private set; } = DateTime.UtcNow;
+
+    public void DefinirSetor(string? setor)
+    {
+        Setor = string.IsNullOrWhiteSpace(setor) ? null : setor.Trim();
+    }
 }

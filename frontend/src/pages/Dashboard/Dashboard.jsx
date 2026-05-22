@@ -137,7 +137,7 @@ export function Dashboard({
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur supports-[backdrop-filter]:bg-slate-950/70">
-        <div className="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="mx-auto flex max-w-[1600px] flex-col gap-3 px-6 py-4 lg:flex-row lg:items-center lg:justify-between">
           <Marca />
 
           <div className="flex flex-wrap items-center gap-3 lg:justify-end">
@@ -148,7 +148,7 @@ export function Dashboard({
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-6 py-8">
+      <main className="mx-auto max-w-[1600px] px-6 py-8">
         {erro && (
           <Alert className="mb-8">
             {erro}

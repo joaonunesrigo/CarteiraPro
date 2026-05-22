@@ -245,6 +245,44 @@ public class BrapiService : IBrapiService
         };
     }
 
+    public async Task<string?> ObterSetorAsync(string ticker)
+    {
+        var tickerNormalizado = ticker.Trim().ToUpperInvariant();
+        if (string.IsNullOrWhiteSpace(tickerNormalizado))
+            return null;
+
+        var response = await _httpClient.GetAsync(
+            $"{BaseUrl}/quote/{tickerNormalizado}?modules=summaryProfile&token={_token}");
+
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        var json = await response.Content.ReadAsStringAsync();
+        using var doc = JsonDocument.Parse(json);
+
+        if (!doc.RootElement.TryGetProperty("results", out var results)
+            || results.ValueKind != JsonValueKind.Array
+            || results.GetArrayLength() == 0)
+            return null;
+
+        if (!results[0].TryGetProperty("summaryProfile", out var profile)
+            || profile.ValueKind != JsonValueKind.Object)
+            return null;
+
+        var setor = LerCampoTexto(profile, "sector") ?? LerCampoTexto(profile, "industry");
+        return setor;
+    }
+
+    private static string? LerCampoTexto(JsonElement obj, string propriedade)
+    {
+        if (!obj.TryGetProperty(propriedade, out var element)
+            || element.ValueKind != JsonValueKind.String)
+            return null;
+
+        var valor = element.GetString();
+        return string.IsNullOrWhiteSpace(valor) ? null : valor.Trim();
+    }
+
     private static DateTime? ObterRegularMarketTime(JsonElement item)
     {
         if (!item.TryGetProperty("regularMarketTime", out var marketTime))

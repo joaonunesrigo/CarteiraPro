@@ -7,6 +7,7 @@ public class RentabilidadeDto
     public Guid Id { get; set; }
     public string Ticker { get; set; } = string.Empty;
     public TipoAtivo Tipo { get; set; }
+    public string? Setor { get; set; }
     public decimal PrecoMedio { get; set; }
     public decimal CotacaoAtual { get; set; }
     public decimal Quantidade { get; set; }

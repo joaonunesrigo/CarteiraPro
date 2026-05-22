@@ -1,3 +1,4 @@
+using Application.Catalogs;
 using Application.Exceptions;
 using Application.Services.Carteiras;
 using Domain.Entities;
@@ -54,6 +55,10 @@ public class AddAtivoService
             ?? throw new InvalidOperationException("Usuário autenticado não encontrado.");
 
         var ativo = new Ativo(usuarioId, carteira.Id, tickerNormalizado, quote.Nome, tipo);
+        var setor = tipo == TipoAtivo.FII
+            ? SegmentosFiisCatalog.TryObter(tickerNormalizado) ?? await _brapiService.ObterSetorAsync(tickerNormalizado)
+            : await _brapiService.ObterSetorAsync(tickerNormalizado) ?? SetoresAcoesCatalog.TryObter(tickerNormalizado);
+        ativo.DefinirSetor(setor);
         await _ativoRepository.AddAsync(ativo);
 
         var operacaoInicial = new Operacao(
