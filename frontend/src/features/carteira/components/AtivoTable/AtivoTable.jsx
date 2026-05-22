@@ -2,7 +2,16 @@ import { Button } from '../../../../components/Button'
 import { DataTable } from '../../../../components/DataTable'
 import { IconeLixeira } from '../../../../components/Icons'
 
-export function AtivoTable({ linhas, excluirAtivo, excluirTodosAtivos, abrirPainelOperacoes, abrirAdicionarAtivo, abrirImportadorB3 }) {
+export function AtivoTable({
+  linhas,
+  excluirAtivo,
+  excluirTodosAtivos,
+  abrirPainelOperacoes,
+  abrirAdicionarAtivo,
+  abrirImportadorB3,
+  bloqueado,
+  mensagemBloqueio,
+}) {
   const colunas = [
     {
       chave: 'ticker',
@@ -68,17 +77,34 @@ export function AtivoTable({ linhas, excluirAtivo, excluirTodosAtivos, abrirPain
       acao={
         <div className="flex flex-wrap items-center gap-2">
           {abrirAdicionarAtivo && (
-            <Button type="button" onClick={abrirAdicionarAtivo}>
+            <Button
+              type="button"
+              onClick={abrirAdicionarAtivo}
+              disabled={bloqueado}
+              title={bloqueado ? mensagemBloqueio : undefined}
+            >
               + Adicionar ativo
             </Button>
           )}
           {abrirImportadorB3 && (
-            <Button variante="secondary" type="button" onClick={abrirImportadorB3}>
+            <Button
+              variante="secondary"
+              type="button"
+              onClick={abrirImportadorB3}
+              disabled={bloqueado}
+              title={bloqueado ? mensagemBloqueio : undefined}
+            >
               Importar B3
             </Button>
           )}
           {linhas.length > 0 && (
-            <Button variante="perigo" type="button" onClick={() => excluirTodosAtivos(linhas.length)}>
+            <Button
+              variante="perigo"
+              type="button"
+              onClick={() => excluirTodosAtivos(linhas.length)}
+              disabled={bloqueado}
+              title={bloqueado ? mensagemBloqueio : undefined}
+            >
               Excluir todos
             </Button>
           )}
@@ -87,7 +113,11 @@ export function AtivoTable({ linhas, excluirAtivo, excluirTodosAtivos, abrirPain
       colunas={colunas}
       itens={linhas}
       obterChaveLinha={(ativo) => ativo.id ?? ativo.ticker}
-      estadoVazio="Nenhum ativo na carteira. Use os botões acima para adicionar ou importar."
+      estadoVazio={
+        bloqueado
+          ? mensagemBloqueio
+          : 'Nenhum ativo na carteira. Use os botões acima para adicionar ou importar.'
+      }
     />
   )
 }

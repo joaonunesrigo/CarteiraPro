@@ -5,6 +5,7 @@ import { montarCartoesResumo } from '../utils/montarCartoesResumo'
 import { montarResumoCarteira } from '../utils/montarResumoCarteira'
 import { normalizarListaRentabilidade } from '../utils/normalizarRentabilidade'
 import { useCarteiraQuery } from '../queries/carteiraQueries'
+import { useCarteiraStore } from '../stores/carteiraStore'
 
 function obterUltimaAtualizacaoCotacao(linhasAtivos) {
   const timestamps = linhasAtivos
@@ -19,7 +20,8 @@ function obterUltimaAtualizacaoCotacao(linhasAtivos) {
 }
 
 export function useCarteira() {
-  const query = useCarteiraQuery()
+  const carteiraId = useCarteiraStore((state) => state.carteiraAtivaId)
+  const query = useCarteiraQuery(carteiraId)
   const dados = useMemo(() => normalizarListaRentabilidade(query.data ?? []), [query.data])
   const resumo = useMemo(() => montarResumoCarteira(dados), [dados])
   const linhasAtivos = useMemo(() => formatarLinhasAtivos(dados), [dados])

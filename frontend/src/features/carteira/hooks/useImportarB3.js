@@ -28,6 +28,7 @@ export function useImportarB3(mostrarToast, aoConcluir) {
   const atualizarLinhaImportacaoAtivo = useCarteiraStore((state) => state.atualizarLinhaImportacaoAtivo)
   const alternarAtivoSelecionadoImportacao = useCarteiraStore((state) => state.alternarAtivoSelecionadoImportacao)
   const limparImportacaoAtivos = useCarteiraStore((state) => state.limparImportacaoAtivos)
+  const carteiraId = useCarteiraStore((state) => state.carteiraAtivaId)
   const importarAtivos = useImportarAtivosMutation()
   const { linhas, processandoArquivo, erroArquivo, nomeArquivo } = importacao
 
@@ -44,7 +45,7 @@ export function useImportarB3(mostrarToast, aoConcluir) {
     })
 
     try {
-      const resposta = await carteiraApi.previewImportacaoB3(arquivo)
+      const resposta = await carteiraApi.previewImportacaoB3(arquivo, carteiraId)
       const preview = (resposta.linhas ?? []).map((dados, indice) => criarLinhaPreview(dados, indice))
       setImportacao({ linhas: preview })
 

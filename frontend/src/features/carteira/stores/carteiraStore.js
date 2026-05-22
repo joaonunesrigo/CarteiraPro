@@ -28,6 +28,9 @@ const formularioOperacaoInicial = {
 }
 
 export const useCarteiraStore = create((set) => ({
+  carteiraAtivaId: null,
+  setCarteiraAtivaId: (carteiraAtivaId) => set({ carteiraAtivaId }),
+
   formularioAtivo: formularioAtivoInicial,
   errosAtivo: errosAtivoIniciais,
   enviandoAtivo: false,

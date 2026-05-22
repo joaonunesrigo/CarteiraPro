@@ -1,4 +1,5 @@
 using Application.Dtos;
+using Application.Services.Carteiras;
 using Domain.Interfaces;
 
 namespace Application.Services.Proventos;
@@ -8,21 +9,25 @@ public class PreviewImportacaoProventosB3Service
     private readonly IB3MovimentacaoParser _parser;
     private readonly IAtivoRepository _ativoRepository;
     private readonly IProventoRepository _proventoRepository;
+    private readonly GetCarteiraAtualService _getCarteiraAtual;
 
     public PreviewImportacaoProventosB3Service(
         IB3MovimentacaoParser parser,
         IAtivoRepository ativoRepository,
-        IProventoRepository proventoRepository)
+        IProventoRepository proventoRepository,
+        GetCarteiraAtualService getCarteiraAtual)
     {
         _parser = parser;
         _ativoRepository = ativoRepository;
         _proventoRepository = proventoRepository;
+        _getCarteiraAtual = getCarteiraAtual;
     }
 
-    public async Task<IReadOnlyList<LinhaImportacaoProventoB3Dto>> ExecuteAsync(Stream arquivo)
+    public async Task<IReadOnlyList<LinhaImportacaoProventoB3Dto>> ExecuteAsync(Stream arquivo, Guid? carteiraId = null)
     {
         var linhas = _parser.Parse(arquivo);
-        var ativos = (await _ativoRepository.GetAllAsync())
+        var carteira = await _getCarteiraAtual.ExecuteAsync(carteiraId);
+        var ativos = (await _ativoRepository.GetAllAsync(carteira.Id))
             .ToDictionary(a => a.Ticker, StringComparer.OrdinalIgnoreCase);
 
         var preview = new List<LinhaImportacaoProventoB3Dto>();
@@ -31,6 +36,7 @@ public class PreviewImportacaoProventosB3Service
         {
             var ativoCadastrado = ativos.TryGetValue(linha.Ticker, out var ativo);
             var jaImportado = await _proventoRepository.ExistsSimilarAsync(
+                carteira.Id,
                 linha.Ticker,
                 linha.DataPagamento,
                 linha.ValorPorCota,

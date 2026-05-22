@@ -1,4 +1,5 @@
 using Application.Services.Ativos.DTOs;
+using Application.Services.Carteiras;
 using Application.Services.Operacoes;
 using Domain.Interfaces;
 
@@ -9,20 +10,24 @@ public class GetRentabilidadeAtivosService
     private readonly IAtivoRepository _ativoRepository;
     private readonly ICotacoesCache _cotacoesCache;
     private readonly CalcularPosicaoAtivoService _calcularPosicao;
+    private readonly GetCarteiraAtualService _getCarteiraAtual;
 
     public GetRentabilidadeAtivosService(
         IAtivoRepository ativoRepository,
         ICotacoesCache cotacoesCache,
-        CalcularPosicaoAtivoService calcularPosicao)
+        CalcularPosicaoAtivoService calcularPosicao,
+        GetCarteiraAtualService getCarteiraAtual)
     {
         _ativoRepository = ativoRepository;
         _cotacoesCache = cotacoesCache;
         _calcularPosicao = calcularPosicao;
+        _getCarteiraAtual = getCarteiraAtual;
     }
 
-    public async Task<IEnumerable<RentabilidadeDto>> ExecuteAsync()
+    public async Task<IEnumerable<RentabilidadeDto>> ExecuteAsync(Guid? carteiraId = null)
     {
-        var ativos = (await _ativoRepository.GetAllAsync()).ToList();
+        var carteira = await _getCarteiraAtual.ExecuteAsync(carteiraId);
+        var ativos = (await _ativoRepository.GetAllAsync(carteira.Id)).ToList();
         if (ativos.Count == 0)
             return [];
 

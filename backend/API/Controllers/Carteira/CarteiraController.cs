@@ -23,23 +23,23 @@ public class CarteiraController : ControllerBase
     }
 
     [HttpGet("resumo")]
-    public async Task<IActionResult> GetResumo()
+    public async Task<IActionResult> GetResumo([FromQuery] Guid? carteiraId)
     {
-        var resumo = await _getResumoCarteira.ExecuteAsync();
+        var resumo = await _getResumoCarteira.ExecuteAsync(carteiraId);
         return Ok(resumo);
     }
 
     [HttpGet("rentabilidade")]
-    public async Task<IActionResult> GetRentabilidade()
+    public async Task<IActionResult> GetRentabilidade([FromQuery] Guid? carteiraId)
     {
-        var rentabilidade = await _getRentabilidade.ExecuteAsync();
+        var rentabilidade = await _getRentabilidade.ExecuteAsync(carteiraId);
         return Ok(rentabilidade);
     }
 
     [HttpGet("evolucao")]
-    public async Task<IActionResult> GetEvolucao([FromQuery] int meses = 12)
+    public async Task<IActionResult> GetEvolucao([FromQuery] int meses = 12, [FromQuery] Guid? carteiraId = null)
     {
-        var evolucao = await _getEvolucao.ExecuteAsync(meses);
+        var evolucao = await _getEvolucao.ExecuteAsync(meses, carteiraId);
         return Ok(evolucao);
     }
 }

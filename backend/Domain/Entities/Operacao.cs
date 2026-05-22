@@ -10,6 +10,7 @@ public class Operacao
 
     public Operacao(
         Guid usuarioId,
+        Guid carteiraId,
         Guid ativoId,
         TipoOperacao tipo,
         DateTime data,
@@ -19,6 +20,7 @@ public class Operacao
         string? observacao = null)
     {
         UsuarioId = usuarioId;
+        CarteiraId = carteiraId;
         AtivoId = ativoId;
         Tipo = tipo;
         Data = DateTime.SpecifyKind(data.Date, DateTimeKind.Utc);
@@ -30,6 +32,7 @@ public class Operacao
 
     public Guid Id { get; private set; } = Guid.NewGuid();
     public Guid UsuarioId { get; private set; }
+    public Guid CarteiraId { get; private set; }
     public Guid AtivoId { get; private set; }
     public TipoOperacao Tipo { get; private set; }
     public DateTime Data { get; private set; }

@@ -11,6 +11,7 @@ using Infrastructure.Importacao;
 using Application.Services.Carteira;
 using Application.Services.Proventos;
 using Application.Services.Operacoes;
+using Application.Services.Carteiras;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -42,6 +43,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Repositórios
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<ICarteiraRepository, CarteiraRepository>();
 builder.Services.AddScoped<IAtivoRepository, AtivoRepository>();
 builder.Services.AddScoped<IProventoRepository, ProventoRepository>();
 builder.Services.AddScoped<IOperacaoRepository, OperacaoRepository>();
@@ -50,6 +52,11 @@ builder.Services.AddScoped<IOperacaoRepository, OperacaoRepository>();
 builder.Services.AddScoped<PasswordHasher>();
 builder.Services.AddScoped<RegistrarUsuarioService>();
 builder.Services.AddScoped<LoginUsuarioService>();
+builder.Services.AddScoped<GetCarteiraAtualService>();
+builder.Services.AddScoped<GetCarteirasService>();
+builder.Services.AddScoped<AddCarteiraService>();
+builder.Services.AddScoped<UpdateCarteiraService>();
+builder.Services.AddScoped<RemoveCarteiraService>();
 builder.Services.AddScoped<AddAtivoService>();
 builder.Services.AddScoped<GetAtivosService>();
 builder.Services.AddScoped<RemoveAtivoService>();

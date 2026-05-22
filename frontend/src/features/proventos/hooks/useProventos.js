@@ -1,7 +1,9 @@
 import { useProventosQuery } from '../queries/proventosQueries'
+import { useCarteiraStore } from '../../carteira/stores/carteiraStore'
 
 export function useProventos() {
-  const query = useProventosQuery()
+  const carteiraId = useCarteiraStore((state) => state.carteiraAtivaId)
+  const query = useProventosQuery(carteiraId)
 
   return {
     proventos: query.data?.lista ?? [],

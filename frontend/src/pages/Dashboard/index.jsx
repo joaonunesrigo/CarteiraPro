@@ -5,6 +5,7 @@ import { useToastContext } from '../../components/Toast'
 import { useAdicionarAtivo, useExcluirAtivo } from '../../features/carteira/hooks/useAtivos'
 import { useImportarB3 } from '../../features/carteira/hooks/useImportarB3'
 import { useCarteira } from '../../features/carteira/hooks/useCarteira'
+import { useCarteiras } from '../../features/carteira/hooks/useCarteiras'
 import { useDesempenhoCarteira } from '../../features/carteira/hooks/useDesempenhoCarteira'
 import { useOperacoesAtivo } from '../../features/carteira/hooks/useOperacoesAtivo'
 import { useImportarMovimentacaoB3 } from '../../features/proventos/hooks/useImportarMovimentacaoB3'
@@ -16,6 +17,7 @@ export default function DashboardPage({ usuario, logout }) {
   const { mostrarToast } = useToastContext()
   const { solicitarConfirmacao } = useConfirmDialogContext()
   const { abaAtiva, mudarAba } = useTabs(ABA_INICIAL_DASHBOARD)
+  const carteiras = useCarteiras(mostrarToast, solicitarConfirmacao)
   const { cartoesResumo, linhasAtivos, dadosGraficos, carregando, erro, cotacaoAtualizadaEm } = useCarteira()
 
   const [adicionarAtivoAberto, setAdicionarAtivoAberto] = useState(false)
@@ -44,6 +46,7 @@ export default function DashboardPage({ usuario, logout }) {
       erro={erro}
       formularioAtivo={formularioAtivo}
       importadorB3={importadorB3}
+      carteiras={carteiras}
       operacoesAtivo={operacoesAtivo}
       painelProventos={{
         ...proventos,

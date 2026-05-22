@@ -28,6 +28,9 @@ namespace Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("CarteiraId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime>("DataCadastro")
                         .HasColumnType("timestamp with time zone");
 
@@ -49,10 +52,49 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UsuarioId", "Ticker")
+                    b.HasIndex("UsuarioId");
+
+                    b.HasIndex("CarteiraId", "Ticker")
                         .IsUnique();
 
                     b.ToTable("Ativos");
+                });
+
+            modelBuilder.Entity("Domain.Entities.Carteira", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Descricao")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("Moeda")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<bool>("Padrao")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId", "Nome")
+                        .IsUnique();
+
+                    b.HasIndex("UsuarioId", "Padrao");
+
+                    b.ToTable("Carteiras");
                 });
 
             modelBuilder.Entity("Domain.Entities.Operacao", b =>
@@ -62,6 +104,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("AtivoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CarteiraId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("Data")
@@ -96,6 +141,8 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("AtivoId");
 
+                    b.HasIndex("CarteiraId");
+
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Operacoes");
@@ -108,6 +155,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<Guid?>("AtivoId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CarteiraId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("DataPagamento")
@@ -133,6 +183,8 @@ namespace Infrastructure.Migrations
                         .HasColumnType("numeric(18,6)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CarteiraId");
 
                     b.HasIndex("UsuarioId");
 
@@ -173,6 +225,21 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Ativo", b =>
                 {
+                    b.HasOne("Domain.Entities.Carteira", null)
+                        .WithMany()
+                        .HasForeignKey("CarteiraId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.Carteira", b =>
+                {
                     b.HasOne("Domain.Entities.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UsuarioId")
@@ -188,6 +255,12 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.Carteira", null)
+                        .WithMany()
+                        .HasForeignKey("CarteiraId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UsuarioId")
@@ -197,6 +270,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Provento", b =>
                 {
+                    b.HasOne("Domain.Entities.Carteira", null)
+                        .WithMany()
+                        .HasForeignKey("CarteiraId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Domain.Entities.Usuario", null)
                         .WithMany()
                         .HasForeignKey("UsuarioId")

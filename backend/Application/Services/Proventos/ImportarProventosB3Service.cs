@@ -1,4 +1,5 @@
 using Application.Dtos;
+using Application.Services.Carteiras;
 using Domain.Entities;
 using Domain.Interfaces;
 
@@ -9,18 +10,22 @@ public class ImportarProventosB3Service
     private readonly IAtivoRepository _ativoRepository;
     private readonly IProventoRepository _proventoRepository;
     private readonly ICurrentUser _currentUser;
+    private readonly GetCarteiraAtualService _getCarteiraAtual;
 
     public ImportarProventosB3Service(
         IAtivoRepository ativoRepository,
         IProventoRepository proventoRepository,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        GetCarteiraAtualService getCarteiraAtual)
     {
         _ativoRepository = ativoRepository;
         _proventoRepository = proventoRepository;
         _currentUser = currentUser;
+        _getCarteiraAtual = getCarteiraAtual;
     }
 
     public async Task<ImportarProventosResultadoDto> ExecuteAsync(
+        Guid? carteiraId,
         IReadOnlyList<ImportarProventoItemDto> proventos,
         bool ignorarDuplicados = true)
     {
@@ -29,6 +34,7 @@ public class ImportarProventosB3Service
         var ignorados = 0;
         var usuarioId = _currentUser.UsuarioId
             ?? throw new InvalidOperationException("Usuário autenticado não encontrado.");
+        var carteira = await _getCarteiraAtual.ExecuteAsync(carteiraId);
 
         foreach (var item in proventos)
         {
@@ -43,11 +49,12 @@ public class ImportarProventosB3Service
                 continue;
             }
 
-            var ativo = await _ativoRepository.GetByTickerAsync(ticker);
+            var ativo = await _ativoRepository.GetByTickerAsync(ticker, carteira.Id);
             var dataPagamento = DateTime.SpecifyKind(item.DataPagamento.Date, DateTimeKind.Utc);
             var valorPorCota = Math.Round(item.ValorPorCota, 6, MidpointRounding.AwayFromZero);
 
             var existe = await _proventoRepository.ExistsSimilarAsync(
+                carteira.Id,
                 ticker,
                 dataPagamento,
                 valorPorCota,
@@ -62,6 +69,7 @@ public class ImportarProventosB3Service
 
             var provento = new Provento(
                 usuarioId,
+                carteira.Id,
                 ativo?.Id,
                 ticker,
                 valorPorCota,

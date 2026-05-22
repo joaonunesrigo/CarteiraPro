@@ -37,7 +37,7 @@ public class AddOperacaoService
         var usuarioId = _currentUser.UsuarioId
             ?? throw new InvalidOperationException("Usuário autenticado não encontrado.");
 
-        var operacao = new Operacao(usuarioId, ativoId, tipo, data, quantidade, precoUnitario, taxas, observacao);
+        var operacao = new Operacao(usuarioId, ativo.CarteiraId, ativoId, tipo, data, quantidade, precoUnitario, taxas, observacao);
         var operacoes = (await _operacaoRepository.GetByAtivoIdAsync(ativoId)).Append(operacao);
 
         CalcularPosicaoAtivoService.Calcular(operacoes);

@@ -34,6 +34,7 @@ public class UsuarioRepository : IUsuarioRepository
     public async Task AddAsync(Usuario usuario)
     {
         await _context.Usuarios.AddAsync(usuario);
+        await _context.Carteiras.AddAsync(new Carteira(usuario.Id, "Minha Carteira", Domain.Enums.Moeda.BRL, padrao: true));
         await _context.SaveChangesAsync();
     }
 }

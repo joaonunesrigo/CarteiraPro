@@ -24,17 +24,20 @@ public class AtivoRepository : IAtivoRepository
         return await _context.Ativos.FirstOrDefaultAsync(a => a.Id == id && a.UsuarioId == UsuarioId);
     }
 
-    public async Task<Ativo?> GetByTickerAsync(string ticker)
+    public async Task<Ativo?> GetByTickerAsync(string ticker, Guid carteiraId)
     {
         var tickerNormalizado = ticker.Trim().ToUpper();
         return await _context.Ativos
-            .FirstOrDefaultAsync(a => a.UsuarioId == UsuarioId && a.Ticker == tickerNormalizado);
+            .FirstOrDefaultAsync(a =>
+                a.UsuarioId == UsuarioId
+                && a.CarteiraId == carteiraId
+                && a.Ticker == tickerNormalizado);
     }
 
-    public async Task<IEnumerable<Ativo>> GetAllAsync()
+    public async Task<IEnumerable<Ativo>> GetAllAsync(Guid carteiraId)
     {
         return await _context.Ativos
-            .Where(a => a.UsuarioId == UsuarioId)
+            .Where(a => a.UsuarioId == UsuarioId && a.CarteiraId == carteiraId)
             .ToListAsync();
     }
 
@@ -60,10 +63,10 @@ public class AtivoRepository : IAtivoRepository
         }
     }
 
-    public async Task<int> DeleteAllAsync()
+    public async Task<int> DeleteAllAsync(Guid carteiraId)
     {
         var ativos = await _context.Ativos
-            .Where(a => a.UsuarioId == UsuarioId)
+            .Where(a => a.UsuarioId == UsuarioId && a.CarteiraId == carteiraId)
             .ToListAsync();
         if (ativos.Count == 0)
             return 0;

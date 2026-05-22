@@ -1,4 +1,5 @@
 using Application.Exceptions;
+using Application.Services.Carteiras;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces;
@@ -10,21 +11,25 @@ public class AddProventoService
     private readonly IAtivoRepository _ativoRepository;
     private readonly IProventoRepository _proventoRepository;
     private readonly ICurrentUser _currentUser;
+    private readonly GetCarteiraAtualService _getCarteiraAtual;
 
     public AddProventoService(
         IAtivoRepository ativoRepository,
         IProventoRepository proventoRepository,
-        ICurrentUser currentUser)
+        ICurrentUser currentUser,
+        GetCarteiraAtualService getCarteiraAtual)
     {
         _ativoRepository = ativoRepository;
         _proventoRepository = proventoRepository;
         _currentUser = currentUser;
+        _getCarteiraAtual = getCarteiraAtual;
     }
 
-    public async Task ExecuteAsync(Guid ativoId, decimal valorPorCota, decimal quantidade, DateTime dataPagamento, TipoProvento tipo)
+    public async Task ExecuteAsync(Guid? carteiraId, Guid ativoId, decimal valorPorCota, decimal quantidade, DateTime dataPagamento, TipoProvento tipo)
     {
+        var carteira = await _getCarteiraAtual.ExecuteAsync(carteiraId);
         var ativo = await _ativoRepository.GetByIdAsync(ativoId);
-        if (ativo is null)
+        if (ativo is null || ativo.CarteiraId != carteira.Id)
             throw new AtivoNaoEncontradoException(ativoId);
 
         if (valorPorCota <= 0 || quantidade <= 0)
@@ -35,6 +40,7 @@ public class AddProventoService
 
         var provento = new Provento(
             usuarioId,
+            carteira.Id,
             ativoId,
             ativo.Ticker,
             valorPorCota,

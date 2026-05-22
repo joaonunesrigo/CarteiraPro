@@ -12,9 +12,9 @@ public class GetResumoCarteiraService
         _getRentabilidade = getRentabilidade;
     }
 
-    public async Task<ResumoCarteiraDto> ExecuteAsync()
+    public async Task<ResumoCarteiraDto> ExecuteAsync(Guid? carteiraId = null)
     {
-        var ativos = await _getRentabilidade.ExecuteAsync();
+        var ativos = await _getRentabilidade.ExecuteAsync(carteiraId);
 
         var totalInvestido = ativos.Sum(a => a.ValorInvestido);
         var totalAtual = ativos.Sum(a => a.ValorAtual);

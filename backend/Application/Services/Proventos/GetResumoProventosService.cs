@@ -12,9 +12,9 @@ public class GetResumoProventosService
         _getProventos = getProventos;
     }
 
-    public async Task<ResumoProventosDto> ExecuteAsync(Guid? ativoId = null, DateTime? dataInicio = null, DateTime? dataFim = null)
+    public async Task<ResumoProventosDto> ExecuteAsync(Guid? carteiraId = null, Guid? ativoId = null, DateTime? dataInicio = null, DateTime? dataFim = null)
     {
-        var proventos = await _getProventos.ExecuteAsync(ativoId, dataInicio, dataFim);
+        var proventos = await _getProventos.ExecuteAsync(carteiraId, ativoId, dataInicio, dataFim);
         var totalRecebido = proventos.Sum(p => p.ValorTotal);
 
         var porMes = proventos

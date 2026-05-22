@@ -1,4 +1,5 @@
 using Application.Services.Carteira.DTOs;
+using Application.Services.Carteiras;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Interfaces;
@@ -14,26 +15,30 @@ public class GetEvolucaoPatrimonialService
     private readonly IOperacaoRepository _operacaoRepository;
     private readonly IHistoricoCotacoesCache _historicoCache;
     private readonly ICotacoesCache _cotacoesCache;
+    private readonly GetCarteiraAtualService _getCarteiraAtual;
 
     public GetEvolucaoPatrimonialService(
         IAtivoRepository ativoRepository,
         IOperacaoRepository operacaoRepository,
         IHistoricoCotacoesCache historicoCache,
-        ICotacoesCache cotacoesCache)
+        ICotacoesCache cotacoesCache,
+        GetCarteiraAtualService getCarteiraAtual)
     {
         _ativoRepository = ativoRepository;
         _operacaoRepository = operacaoRepository;
         _historicoCache = historicoCache;
         _cotacoesCache = cotacoesCache;
+        _getCarteiraAtual = getCarteiraAtual;
     }
 
-    public async Task<EvolucaoPatrimonialDto> ExecuteAsync(int meses)
+    public async Task<EvolucaoPatrimonialDto> ExecuteAsync(int meses, Guid? carteiraId = null)
     {
-        var ativos = (await _ativoRepository.GetAllAsync()).ToList();
+        var carteira = await _getCarteiraAtual.ExecuteAsync(carteiraId);
+        var ativos = (await _ativoRepository.GetAllAsync(carteira.Id)).ToList();
         if (ativos.Count == 0)
             return new EvolucaoPatrimonialDto();
 
-        var operacoes = (await _operacaoRepository.GetAllAsync())
+        var operacoes = (await _operacaoRepository.GetAllAsync(carteira.Id))
             .OrderBy(o => o.Data)
             .ThenBy(o => o.DataCadastro)
             .ToList();

@@ -1,13 +1,15 @@
 import { useQuery } from '@tanstack/react-query'
 import { proventosApi } from '../services/proventos.api'
 
-export const proventosQueryKey = ['proventos']
+export function proventosQueryKey(carteiraId) {
+  return ['proventos', carteiraId ?? 'padrao']
+}
 
-export function useProventosQuery() {
+export function useProventosQuery(carteiraId) {
   return useQuery({
-    queryKey: proventosQueryKey,
+    queryKey: proventosQueryKey(carteiraId),
     queryFn: async () => {
-      const [lista, resumo] = await Promise.all([proventosApi.listar(), proventosApi.obterResumo()])
+      const [lista, resumo] = await Promise.all([proventosApi.listar(carteiraId), proventosApi.obterResumo(carteiraId)])
 
       return { lista, resumo }
     },

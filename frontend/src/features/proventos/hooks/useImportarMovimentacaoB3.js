@@ -1,6 +1,7 @@
 import { useImportarProventosMutation } from '../mutations/proventosMutations'
 import { proventosApi } from '../services/proventos.api'
 import { useProventosStore } from '../stores/proventosStore'
+import { useCarteiraStore } from '../../carteira/stores/carteiraStore'
 
 function criarLinhaPreview(dados, indice) {
   return {
@@ -25,6 +26,7 @@ export function useImportarMovimentacaoB3(mostrarToast) {
   const setImportacao = useProventosStore((state) => state.setImportacao)
   const alternarSelecionadoImportacao = useProventosStore((state) => state.alternarSelecionadoImportacao)
   const limparImportacao = useProventosStore((state) => state.limparImportacao)
+  const carteiraId = useCarteiraStore((state) => state.carteiraAtivaId)
   const importarProventos = useImportarProventosMutation()
   const { linhas, processandoArquivo, erroArquivo, nomeArquivo } = importacao
 
@@ -41,7 +43,7 @@ export function useImportarMovimentacaoB3(mostrarToast) {
     })
 
     try {
-      const resposta = await proventosApi.previewImportacaoB3(arquivo)
+      const resposta = await proventosApi.previewImportacaoB3(arquivo, carteiraId)
       const preview = (resposta.linhas ?? []).map((dados, indice) => criarLinhaPreview(dados, indice))
 
       setImportacao({ linhas: preview })

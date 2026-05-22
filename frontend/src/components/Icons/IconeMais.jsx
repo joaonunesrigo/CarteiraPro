@@ -1,0 +1,11 @@
+export function IconeMais({ className = 'h-4 w-4', ...props }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className={className} aria-hidden="true" {...props}>
+      <path
+        fillRule="evenodd"
+        d="M10 3.25a.75.75 0 0 1 .75.75v5.25H16a.75.75 0 0 1 0 1.5h-5.25V16a.75.75 0 0 1-1.5 0v-5.25H4a.75.75 0 0 1 0-1.5h5.25V4a.75.75 0 0 1 .75-.75Z"
+        clipRule="evenodd"
+      />
+    </svg>
+  )
+}

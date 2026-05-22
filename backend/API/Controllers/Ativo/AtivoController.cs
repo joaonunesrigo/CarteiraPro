@@ -46,18 +46,19 @@ public class AtivosController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAll()
+    public async Task<IActionResult> GetAll([FromQuery] Guid? carteiraId)
     {
-        var ativos = await _obterAtivos.ExecuteAsync();
+        var ativos = await _obterAtivos.ExecuteAsync(carteiraId);
         return Ok(ativos);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] AddAtivoRequestRecord request)
+    public async Task<IActionResult> Add([FromQuery] Guid? carteiraId, [FromBody] AddAtivoRequestRecord request)
     {
         try
         {
             await _adicionarAtivo.ExecuteAsync(
+                carteiraId,
                 request.Ticker,
                 request.PrecoMedio,
                 request.Quantidade,
@@ -80,9 +81,9 @@ public class AtivosController : ControllerBase
     }
 
     [HttpDelete("todos")]
-    public async Task<IActionResult> DeleteAll()
+    public async Task<IActionResult> DeleteAll([FromQuery] Guid? carteiraId)
     {
-        var removidos = await _removerTodosAtivos.ExecuteAsync();
+        var removidos = await _removerTodosAtivos.ExecuteAsync(carteiraId);
         return Ok(new { removidos });
     }
 
@@ -95,7 +96,7 @@ public class AtivosController : ControllerBase
 
     [HttpPost("importar/preview")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> PreviewImportacao(IFormFile arquivo)
+    public async Task<IActionResult> PreviewImportacao(IFormFile arquivo, [FromQuery] Guid? carteiraId)
     {
         if (arquivo is null || arquivo.Length == 0)
             return BadRequest(new { mensagem = "Envie um arquivo .xlsx de posição da B3." });
@@ -106,7 +107,7 @@ public class AtivosController : ControllerBase
         try
         {
             await using var stream = arquivo.OpenReadStream();
-            var linhas = await _previewImportacaoB3.ExecuteAsync(stream);
+            var linhas = await _previewImportacaoB3.ExecuteAsync(stream, carteiraId);
             return Ok(new { linhas });
         }
         catch (ArquivoB3InvalidoException ex)
@@ -116,12 +117,12 @@ public class AtivosController : ControllerBase
     }
 
     [HttpPost("importar")]
-    public async Task<IActionResult> Importar([FromBody] ImportarAtivosRequestRecord request)
+    public async Task<IActionResult> Importar([FromQuery] Guid? carteiraId, [FromBody] ImportarAtivosRequestRecord request)
     {
         if (request.Ativos is null || request.Ativos.Count == 0)
             return BadRequest(new { mensagem = "Nenhum ativo para importar." });
 
-        var resultado = await _importarAtivos.ExecuteAsync(request.Ativos, request.IgnorarDuplicados);
+        var resultado = await _importarAtivos.ExecuteAsync(carteiraId, request.Ativos, request.IgnorarDuplicados);
         return Ok(resultado);
     }
 

@@ -1,1 +1,6 @@
+export { IconeCarteira } from './IconeCarteira'
+export { IconeEstrela } from './IconeEstrela'
+export { IconeLapis } from './IconeLapis'
 export { IconeLixeira } from './IconeLixeira'
+export { IconeMais } from './IconeMais'
+export { IconeSair } from './IconeSair'

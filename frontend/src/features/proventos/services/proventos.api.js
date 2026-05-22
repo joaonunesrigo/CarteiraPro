@@ -1,12 +1,18 @@
 import { apiClient } from '../../carteira/services/apiClient'
 import { apiUpload } from '../../carteira/services/apiUpload'
 
+function comCarteira(caminho, carteiraId) {
+  if (!carteiraId) return caminho
+  const separador = caminho.includes('?') ? '&' : '?'
+  return `${caminho}${separador}carteiraId=${carteiraId}`
+}
+
 export const proventosApi = {
-  listar: () => apiClient('/proventos'),
-  obterResumo: () => apiClient('/proventos/resumo'),
-  previewImportacaoB3: (arquivo) => apiUpload('/proventos/importar/preview', arquivo),
-  importar: (dados) =>
-    apiClient('/proventos/importar', {
+  listar: (carteiraId) => apiClient(comCarteira('/proventos', carteiraId)),
+  obterResumo: (carteiraId) => apiClient(comCarteira('/proventos/resumo', carteiraId)),
+  previewImportacaoB3: (arquivo, carteiraId) => apiUpload(comCarteira('/proventos/importar/preview', carteiraId), arquivo),
+  importar: (dados, carteiraId) =>
+    apiClient(comCarteira('/proventos/importar', carteiraId), {
       method: 'POST',
       body: JSON.stringify(dados),
     }),

@@ -34,30 +34,33 @@ public class ProventosController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetAll(
+        [FromQuery] Guid? carteiraId,
         [FromQuery] Guid? ativoId,
         [FromQuery] DateTime? dataInicio,
         [FromQuery] DateTime? dataFim)
     {
-        var proventos = await _obterProventos.ExecuteAsync(ativoId, dataInicio, dataFim);
+        var proventos = await _obterProventos.ExecuteAsync(carteiraId, ativoId, dataInicio, dataFim);
         return Ok(proventos);
     }
 
     [HttpGet("resumo")]
     public async Task<IActionResult> GetResumo(
+        [FromQuery] Guid? carteiraId,
         [FromQuery] Guid? ativoId,
         [FromQuery] DateTime? dataInicio,
         [FromQuery] DateTime? dataFim)
     {
-        var resumo = await _obterResumo.ExecuteAsync(ativoId, dataInicio, dataFim);
+        var resumo = await _obterResumo.ExecuteAsync(carteiraId, ativoId, dataInicio, dataFim);
         return Ok(resumo);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Add([FromBody] AddProventoRequestRecord request)
+    public async Task<IActionResult> Add([FromQuery] Guid? carteiraId, [FromBody] AddProventoRequestRecord request)
     {
         try
         {
             await _adicionarProvento.ExecuteAsync(
+                carteiraId,
                 request.AtivoId,
                 request.ValorPorCota,
                 request.Quantidade,
@@ -85,7 +88,7 @@ public class ProventosController : ControllerBase
 
     [HttpPost("importar/preview")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> PreviewImportacao(IFormFile arquivo)
+    public async Task<IActionResult> PreviewImportacao(IFormFile arquivo, [FromQuery] Guid? carteiraId)
     {
         if (arquivo is null || arquivo.Length == 0)
             return BadRequest(new { mensagem = "Envie um arquivo .xlsx de movimentação da B3." });
@@ -96,7 +99,7 @@ public class ProventosController : ControllerBase
         try
         {
             await using var stream = arquivo.OpenReadStream();
-            var linhas = await _previewImportacaoB3.ExecuteAsync(stream);
+            var linhas = await _previewImportacaoB3.ExecuteAsync(stream, carteiraId);
             return Ok(new { linhas });
         }
         catch (ArquivoB3InvalidoException ex)
@@ -106,12 +109,12 @@ public class ProventosController : ControllerBase
     }
 
     [HttpPost("importar")]
-    public async Task<IActionResult> Importar([FromBody] ImportarProventosRequestRecord request)
+    public async Task<IActionResult> Importar([FromQuery] Guid? carteiraId, [FromBody] ImportarProventosRequestRecord request)
     {
         if (request.Proventos is null || request.Proventos.Count == 0)
             return BadRequest(new { mensagem = "Nenhum provento para importar." });
 
-        var resultado = await _importarProventosB3.ExecuteAsync(request.Proventos, request.IgnorarDuplicados);
+        var resultado = await _importarProventosB3.ExecuteAsync(carteiraId, request.Proventos, request.IgnorarDuplicados);
         return Ok(resultado);
     }
 }

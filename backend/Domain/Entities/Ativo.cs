@@ -8,9 +8,10 @@ public class Ativo
     {
     }
 
-    public Ativo(Guid usuarioId, string ticker, string nome, TipoAtivo tipo)
+    public Ativo(Guid usuarioId, Guid carteiraId, string ticker, string nome, TipoAtivo tipo)
     {
         UsuarioId = usuarioId;
+        CarteiraId = carteiraId;
         Ticker = ticker.ToUpper();
         Nome = nome;
         Tipo = tipo;
@@ -18,6 +19,7 @@ public class Ativo
 
     public Guid Id { get; private set; } = Guid.NewGuid();
     public Guid UsuarioId { get; private set; }
+    public Guid CarteiraId { get; private set; }
     public string Ticker { get; private set; } = string.Empty;
     public string Nome { get; private set; } = string.Empty;
     public TipoAtivo Tipo { get; private set; }

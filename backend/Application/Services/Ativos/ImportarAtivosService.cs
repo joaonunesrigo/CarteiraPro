@@ -1,5 +1,6 @@
 using Application.Dtos;
 using Application.Exceptions;
+using Application.Services.Carteiras;
 using Domain.Interfaces;
 
 namespace Application.Services.Ativos;
@@ -8,17 +9,24 @@ public class ImportarAtivosService
 {
     private readonly AddAtivoService _adicionarAtivo;
     private readonly IAtivoRepository _ativoRepository;
+    private readonly GetCarteiraAtualService _getCarteiraAtual;
 
-    public ImportarAtivosService(AddAtivoService adicionarAtivo, IAtivoRepository ativoRepository)
+    public ImportarAtivosService(
+        AddAtivoService adicionarAtivo,
+        IAtivoRepository ativoRepository,
+        GetCarteiraAtualService getCarteiraAtual)
     {
         _adicionarAtivo = adicionarAtivo;
         _ativoRepository = ativoRepository;
+        _getCarteiraAtual = getCarteiraAtual;
     }
 
     public async Task<ImportarAtivosResultadoDto> ExecuteAsync(
+        Guid? carteiraId,
         IReadOnlyList<ImportarAtivoItemDto> ativos,
         bool ignorarDuplicados = true)
     {
+        var carteira = await _getCarteiraAtual.ExecuteAsync(carteiraId);
         var erros = new List<ErroImportacaoDto>();
         var importados = 0;
         var ignorados = 0;
@@ -42,7 +50,7 @@ public class ImportarAtivosService
                 continue;
             }
 
-            var existente = await _ativoRepository.GetByTickerAsync(ticker);
+            var existente = await _ativoRepository.GetByTickerAsync(ticker, carteira.Id);
             if (existente is not null)
             {
                 if (ignorarDuplicados)
@@ -55,6 +63,7 @@ public class ImportarAtivosService
             try
             {
                 await _adicionarAtivo.ExecuteAsync(
+                    carteira.Id,
                     ticker,
                     item.PrecoMedio,
                     item.Quantidade,

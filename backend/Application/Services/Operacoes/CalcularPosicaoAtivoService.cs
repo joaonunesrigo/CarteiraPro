@@ -23,8 +23,15 @@ public class CalcularPosicaoAtivoService
 
     public async Task<IReadOnlyDictionary<Guid, PosicaoAtivoDto>> ExecuteAsync(IEnumerable<Ativo> ativos)
     {
-        var idsAtivos = ativos.Select(a => a.Id).ToHashSet();
-        var operacoes = (await _operacaoRepository.GetAllAsync())
+        var listaAtivos = ativos.ToList();
+        var idsAtivos = listaAtivos.Select(a => a.Id).ToHashSet();
+        var carteiraIds = listaAtivos.Select(a => a.CarteiraId).Distinct().ToList();
+        var todasOperacoes = new List<Operacao>();
+
+        foreach (var carteiraId in carteiraIds)
+            todasOperacoes.AddRange(await _operacaoRepository.GetAllAsync(carteiraId));
+
+        var operacoes = todasOperacoes
             .Where(o => idsAtivos.Contains(o.AtivoId))
             .GroupBy(o => o.AtivoId)
             .ToDictionary(g => g.Key, g => Calcular(g));

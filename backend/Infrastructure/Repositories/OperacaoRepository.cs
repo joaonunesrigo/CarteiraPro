@@ -34,10 +34,10 @@ public class OperacaoRepository : IOperacaoRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Operacao>> GetAllAsync()
+    public async Task<IEnumerable<Operacao>> GetAllAsync(Guid carteiraId)
     {
         return await _context.Operacoes
-            .Where(o => o.UsuarioId == UsuarioId)
+            .Where(o => o.UsuarioId == UsuarioId && o.CarteiraId == carteiraId)
             .OrderBy(o => o.Data)
             .ThenBy(o => o.DataCadastro)
             .ThenBy(o => o.Id)

@@ -33,10 +33,10 @@ public class ProventoRepository : IProventoRepository
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Provento>> GetAllAsync(Guid? ativoId = null, DateTime? dataInicio = null, DateTime? dataFim = null)
+    public async Task<IEnumerable<Provento>> GetAllAsync(Guid carteiraId, Guid? ativoId = null, DateTime? dataInicio = null, DateTime? dataFim = null)
     {
         var query = _context.Proventos
-            .Where(p => p.UsuarioId == UsuarioId)
+            .Where(p => p.UsuarioId == UsuarioId && p.CarteiraId == carteiraId)
             .AsQueryable();
 
         if (ativoId.HasValue)
@@ -54,6 +54,7 @@ public class ProventoRepository : IProventoRepository
     }
 
     public async Task<bool> ExistsSimilarAsync(
+        Guid carteiraId,
         string ticker,
         DateTime dataPagamento,
         decimal valorPorCota,
@@ -67,6 +68,7 @@ public class ProventoRepository : IProventoRepository
 
         return await _context.Proventos.AnyAsync(p =>
             p.UsuarioId == UsuarioId
+            && p.CarteiraId == carteiraId
             && p.Ticker == tickerNormalizado
             && p.DataPagamento.Date == data
             && p.Quantidade == quantidade
